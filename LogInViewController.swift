@@ -22,7 +22,7 @@ class LogInViewController: UIViewController {
         saveCredentialsToUserDefaults()
         self.view.endEditing(true)
         
-        let networkOp = NetworkOperation(typeOfConnection: .login)
+        let networkOp = NetworkOperation(typeOfConnection: .login, spinner: activityIndicator)
         
         networkOp.start()
 
