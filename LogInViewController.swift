@@ -22,28 +22,14 @@ class LogInViewController: UIViewController {
         saveCredentialsToUserDefaults()
         self.view.endEditing(true)
         
-        let networkOperation  = NetworkOperation(url: NSURL(string: "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png")!, keyForData: "imageAvatar")
+        let networkOp = NetworkOperation(typeOfConnection: .login)
         
-        networkOperation.completionBlock = {
-            if let data = NSUserDefaults.standardUserDefaults().dataForKey("imageAvatar"),
-                let image = UIImage(data: data){
-                
-                
-                dispatch_async(dispatch_get_main_queue(), {
-                    let logo = self.view.viewWithTag(9) as? UIImageView
-                    logo?.image = image
-
-                })
-              
-            }
-        }
-        networkOperation.start()
-        
+        networkOp.start()
 
     }
     
     @IBAction func singupOnTheWeb(sender: UIButton) {
-        if let udacitySignupURL = NSURL(string: Udacity.urlSignUp) {
+        if let udacitySignupURL = NSURL(string: Udacity.urlSignUpString) {
             UIApplication.sharedApplication().openURL(udacitySignupURL)
         }
     }
@@ -73,17 +59,13 @@ class LogInViewController: UIViewController {
 extension LogInViewController{
 
     private func saveCredentialsToUserDefaults(){
-        NSUserDefaults.standardUserDefaults().setObject(emailTextField.text, forKey: Udacity.userEmail)
-        NSUserDefaults.standardUserDefaults().setObject(passwordTextField.text, forKey: Udacity.userPassword)
+        UserDefault.setCredentials(emailTextField.text ?? "", password: passwordTextField.text ?? "")
     }
     
     private func loadCredentialsFromUserDefaults(){
-        let defaults = NSUserDefaults.standardUserDefaults()
-        if let udacityUserEmail = defaults.stringForKey(Udacity.userEmail) {
-            let udacityUserPassword = defaults.stringForKey(Udacity.userPassword)
-            emailTextField.text = udacityUserEmail
-            passwordTextField.text = udacityUserPassword
-        }
+        let (email, password) = UserDefault.getCredentials()
+        emailTextField.text = email
+        passwordTextField.text = password
     }
 }
 

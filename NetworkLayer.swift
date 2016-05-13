@@ -7,7 +7,11 @@
 //
 
 import Foundation
-import CoreData
+
+enum ConnectionType:String{
+    case login = "udacityLoginResponse"
+}
+
 
 class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
     // custom fields
@@ -50,6 +54,37 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
         
     }
     
+    init(typeOfConnection:ConnectionType){
+        switch typeOfConnection {
+        case .login:
+            super.init()
+            self.url = NSURL(string: "https://www.udacity.com/api/session")
+            self.keyString = ConnectionType.login.rawValue
+            self.request = NSMutableURLRequest(URL: url!)
+            request?.HTTPMethod = "POST"
+            request?.addValue("application/json", forHTTPHeaderField: "Accept")
+            request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request?.HTTPBody = UserDefault.getHTTPBodyUdacityPayload()
+            completionBlock = {
+                if let data = UserDefault.getLoginDataResponse() {
+                    let subData =  data.subdataWithRange(NSMakeRange(5, data.length - 5 ))
+                    
+                    do{
+                        let jsonDict = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as! NSDictionary
+                        NSUserDefaults.standardUserDefaults().setObject(jsonDict, forKey: UserDefault.loginJSONResponseKey)
+                    } catch {
+                        print(error)
+                    }
+                }
+            }
+            
+        default:
+            fatalError("Unrecognized connection type")
+        }
+        
+        
+    
+    }
     init(url:NSURL, keyForData:String){
         super.init()
         self.url = url
@@ -88,7 +123,7 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
         
         do {
            // try processData()
-            NSUserDefaults.standardUserDefaults().setObject(data, forKey: keyString ?? "imageStore")
+            NSUserDefaults.standardUserDefaults().setObject(data, forKey: keyString ?? "")
             
         } catch {
             print("Failed to process data: \(error)")
