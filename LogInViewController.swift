@@ -10,30 +10,6 @@ import UIKit
 
 class LogInViewController: UIViewController,ErrorReportingFromNetworkProtocol {
     
-    private(set) var errorReported:ErrorType?
-    
-    func reportErrorFromOperation(operationError: ErrorType?) {
-        if let operationError = operationError {
-            self.errorReported = operationError
-            let descriptionError = (operationError as NSError).localizedDescription
-            let errorActionSheet = UIAlertController(title: "Error", message: descriptionError, preferredStyle: .Alert)
-            let tryAgain = UIAlertAction(title: "Try Again?", style: .Default, handler: nil)
-            errorActionSheet.addAction(tryAgain)
-            let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
-            errorActionSheet.addAction(cancel)
-            self.presentViewController(errorActionSheet, animated: true, completion: { self.activityIndicator.stopAnimating() })
-        } else {
-            self.errorReported = nil
-        }
-    }
-    
-    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
-        if identifier == "loginUdacitySeg" && errorReported != nil {
-            return false
-        }
-        return true
-    }
-    
     @IBOutlet weak var emailTextField: UITextField!
     
     @IBOutlet weak var passwordTextField: UITextField!
@@ -55,6 +31,7 @@ class LogInViewController: UIViewController,ErrorReportingFromNetworkProtocol {
         networkOpGetUdacityFullName.completionBlock = {
             dispatch_async(dispatch_get_main_queue(), {
                 if self.shouldPerformSegueWithIdentifier("loginUdacitySeg", sender: nil) {
+                    self.activityIndicator.stopAnimating()
                     self.performSegueWithIdentifier("loginUdacitySeg", sender: nil) }
             })
         }
@@ -70,6 +47,33 @@ class LogInViewController: UIViewController,ErrorReportingFromNetworkProtocol {
             UIApplication.sharedApplication().openURL(udacitySignupURL)
         }
     }
+    
+//MARK:- Error Reporting Code
+    
+    private(set) var errorReported:ErrorType?
+    private var presentingAlert:Bool = false
+    
+    func reportErrorFromOperation(operationError: ErrorType?) {
+        if let operationError = operationError where
+            self.errorReported == nil && presentingAlert == false {
+            self.errorReported = operationError
+            let descriptionError = (operationError as NSError).localizedDescription
+            self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
+            self.activityIndicator.stopAnimating()
+            
+        } else {
+            self.errorReported = nil
+        }
+    }
+    
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        if identifier == "loginUdacitySeg" && (errorReported != nil  || presentingAlert == true){
+            return false
+        }
+        return true
+    }
+//MARK:- Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()

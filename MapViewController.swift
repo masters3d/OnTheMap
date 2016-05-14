@@ -11,9 +11,12 @@ class MapViewController: UIViewController, MKMapViewDelegate{
 
     @IBOutlet weak var mapView: MKMapView!
     
+    @IBAction func logout(sender: UIBarButtonItem) {
+         logoutPerformer()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         mapView.delegate = self
         
         let locations = hardCodedLocationData()

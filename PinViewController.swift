@@ -8,6 +8,11 @@ import UIKit
 
 class PinViewController: UIViewController {
 
+   
+    @IBAction func logout(sender: UIBarButtonItem) {
+        logoutPerformer()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.

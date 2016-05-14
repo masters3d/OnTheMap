@@ -34,7 +34,7 @@ enum UserDefault{
     
     static func getLoginJSONDictionary()-> NSDictionary? {
         var jsonDict:NSDictionary?
-        if let data = defaults.dataForKey(ConnectionType.login.rawValue) {
+        if let data = defaults.dataForKey(UdacityConnectionType.login.rawValue) {
             let subData =  data.subdataWithRange(NSMakeRange(5, data.length - 5 ))
             
             do {
@@ -58,7 +58,7 @@ enum UserDefault{
         var last:String = ""
         var nick:String = ""
         
-        if let data = defaults.dataForKey(ConnectionType.getFullName.rawValue) {
+        if let data = defaults.dataForKey(UdacityConnectionType.getFullName.rawValue) {
             let subData = data.subdataWithRange(NSMakeRange(5, data.length - 5))
             do {
                 let response = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as! NSDictionary

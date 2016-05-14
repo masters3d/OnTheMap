@@ -42,7 +42,7 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
     
     override func start() {
         
-        // clears up any errors in the delagate
+        // clears up any errors in the delegate
         dispatch_async(dispatch_get_main_queue(), {
             self.delegate?.reportErrorFromOperation(nil)
         })
@@ -107,38 +107,35 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
             return
         }
         
-        do {
-           // try processData()
+        
+        //MARK:- ProcessData() and save
+        
             NSUserDefaults.standardUserDefaults().setObject(data, forKey: keyString ?? "")
-            
-        } catch {
-            print("Failed to process data: \(error)")
-        }
+        
         totalTime = NSDate.timeIntervalSinceReferenceDate() - startTime!
         finished = true
     }
 }
 
 
-enum ConnectionType:String{
+enum UdacityConnectionType:String{
     case login = "udacityLoginResponse"
     case getFullName = "getFullNameResponse"
 }
 
 //MARK: - Udacity Connection
 extension NetworkOperation {
-    convenience init(typeOfConnection:ConnectionType){
+    convenience init(typeOfConnection:UdacityConnectionType){
         switch typeOfConnection {
         case .login:
-            self.init(url:NSURL(string: "https://www.udacity.com/api/session")!, keyForData:ConnectionType.login.rawValue)
+            self.init(url:NSURL(string: "https://www.udacity.com/api/session")!, keyForData:UdacityConnectionType.login.rawValue)
             request?.HTTPMethod = "POST"
             request?.addValue("application/json", forHTTPHeaderField: "Accept")
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request?.HTTPBody = UserDefault.getHTTPBodyUdacityPayload()
             
         case .getFullName:
-            self.init(url:NSURL(string: "https://www.udacity.com/api/users/" + "\(UserDefault.getUserId())")!, keyForData:ConnectionType.getFullName.rawValue)
-           
+            self.init(url:NSURL(string: "https://www.udacity.com/api/users/" + "\(UserDefault.getUserId())")!, keyForData:UdacityConnectionType.getFullName.rawValue)
         }
     }
 }

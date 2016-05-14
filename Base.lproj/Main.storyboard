@@ -4,6 +4,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--MapView-->
@@ -30,7 +31,17 @@
                             <constraint firstAttribute="trailingMargin" secondItem="hNp-oP-XRT" secondAttribute="trailing" constant="-20" id="xCZ-dd-CGO"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Map" id="K0H-hg-est"/>
+                    <navigationItem key="navigationItem" title="Map" id="K0H-hg-est">
+                        <barButtonItem key="leftBarButtonItem" title="Logout" id="FVN-Eu-TjB">
+                            <connections>
+                                <action selector="logout:" destination="9pv-A4-QxB" id="3Nb-4x-crT"/>
+                            </connections>
+                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="refresh" id="GYs-RY-6Fi"/>
+                            <barButtonItem image="pin" id="OQl-1D-OdX"/>
+                        </rightBarButtonItems>
+                    </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="hNp-oP-XRT" id="MHC-Si-zV9"/>
                     </connections>
@@ -73,7 +84,17 @@
                             <constraint firstAttribute="centerY" secondItem="zEq-FU-wV5" secondAttribute="centerY" id="qzY-Ky-pLD"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="PZN-64-ICJ"/>
+                    <navigationItem key="navigationItem" id="ABW-LD-KSz">
+                        <barButtonItem key="leftBarButtonItem" title="Logout" id="I0n-yR-8Cm">
+                            <connections>
+                                <action selector="logout:" destination="8rJ-Kc-sve" id="D28-pm-77v"/>
+                            </connections>
+                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="refresh" id="5X0-eA-QZ0"/>
+                            <barButtonItem image="pin" id="2e1-sO-caV"/>
+                        </rightBarButtonItems>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
             </objects>
@@ -258,6 +279,7 @@
     <resources>
         <image name="list" width="32" height="32"/>
         <image name="map" width="32" height="32"/>
+        <image name="pin" width="32" height="32"/>
         <image name="udacity" width="492" height="492"/>
     </resources>
 </document>
