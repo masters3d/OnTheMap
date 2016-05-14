@@ -8,18 +8,11 @@
 
 import UIKit
 
-enum ConnectionType:String{
-    case login = "udacityLoginResponse"
-}
-
-
 class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
     // custom fields
     private var url:NSURL?
     private var keyString:String?
     var request:NSMutableURLRequest?
-    var startUpdatingUIClousure:()->Void = {}
-    var endUpdatingUIClousure:()->Void = {}
     
     // default
    private var data = NSMutableData()
@@ -44,13 +37,10 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
             return
         }
         
-        startUpdatingUIClousure()
-        
         let config = NSURLSessionConfiguration.defaultSessionConfiguration()
         let session = NSURLSession(configuration: config, delegate: self, delegateQueue: nil)
         
         if let request = request{
-        //let request = NSMutableURLRequest(URL: url)
         let task = session.dataTaskWithRequest(request)
         startTime = NSDate.timeIntervalSinceReferenceDate()
         task.resume()
@@ -71,7 +61,7 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
             fatalError("Unexpected response type")
         }
         
-        switch httpResponse.statusCode {
+        switch httpResponse.statusCode{
         case 200:
             
             completionHandler(.Allow)
@@ -106,9 +96,15 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
     }
 }
 
-extension NetworkOperation {
 
-    convenience init(typeOfConnection:ConnectionType, spinner:UIActivityIndicatorView){
+enum ConnectionType:String{
+    case login = "udacityLoginResponse"
+    case getFullName = "getFullNameResponse"
+}
+
+//MARK: - Udacity Connection
+extension NetworkOperation {
+    convenience init(typeOfConnection:ConnectionType){
         switch typeOfConnection {
         case .login:
             self.init(url:NSURL(string: "https://www.udacity.com/api/session")!, keyForData:ConnectionType.login.rawValue)
@@ -116,37 +112,23 @@ extension NetworkOperation {
             request?.addValue("application/json", forHTTPHeaderField: "Accept")
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request?.HTTPBody = UserDefault.getHTTPBodyUdacityPayload()
-            completionBlock = {
-                if let data = UserDefault.getLoginDataResponse() {
-                    let subData =  data.subdataWithRange(NSMakeRange(5, data.length - 5 ))
-                    
-                    do{
-                        let jsonDict = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as! NSDictionary
-                        NSUserDefaults.standardUserDefaults().setObject(jsonDict, forKey: UserDefault.loginJSONResponseKey)
-                    } catch {
-                        print(error)
-                    }
-                }
-                self.endUpdatingUIClousure()
-            }
             
-            startUpdatingUIClousure = {
-                dispatch_async(dispatch_get_main_queue(), {
-                    spinner.startAnimating()
-                })
-            }
-            
-            endUpdatingUIClousure = {
-                dispatch_async(dispatch_get_main_queue(), {
-                    spinner.stopAnimating()
-                })
-            }
-            
-        default:
-            fatalError("Unrecognized connection type")
+        case .getFullName:
+            self.init(url:NSURL(string: "https://www.udacity.com/api/users/" + "\(UserDefault.getUserId())")!, keyForData:ConnectionType.getFullName.rawValue)
+           
         }
     }
-    
+}
+
+//MARK: - Parse Connections
+extension NetworkOperation{
+    private func escapeURL( userId: String) -> String {
+        let parseURL = "https://api.parse.com/1/classes/StudentLocation"
+        let urlString = parseURL + "?where={\"uniqueKey\":\"\(userId)\"}"
+        let escapedURLString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) ?? ""
+        return escapedURLString
+    }
+
 }
 
 

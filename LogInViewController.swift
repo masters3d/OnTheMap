@@ -21,11 +21,36 @@ class LogInViewController: UIViewController {
     @IBAction func loginToUdacity(sender: UIButton) {
         saveCredentialsToUserDefaults()
         self.view.endEditing(true)
+        activityIndicator.startAnimating()
         
-        let networkOp = NetworkOperation(typeOfConnection: .login, spinner: activityIndicator)
+        // Network Operations
+//        let networkOpUdacityLogin = NetworkOperation(typeOfConnection: .login )
+//        networkOpUdacityLogin.completionBlock = {
+//            let networkOpGetUdacityFullName = NetworkOperation(typeOfConnection: .getFullName)
+//            networkOpGetUdacityFullName.completionBlock = {
+//            dispatch_async(dispatch_get_main_queue(), {
+//                self.performSegueWithIdentifier("loginUdacitySeg", sender: nil)
+//            })
+//            }
+//            networkOpGetUdacityFullName.start()
+//        }
+//        networkOpUdacityLogin.start()
         
-        networkOp.start()
+        
+        let networkOpUdacityLogin       = NetworkOperation(typeOfConnection: .login )
+        let networkOpGetUdacityFullName = NetworkOperation(typeOfConnection: .getFullName)
+        networkOpGetUdacityFullName.addDependency(networkOpUdacityLogin)
+        networkOpGetUdacityFullName.completionBlock = {
+            dispatch_async(dispatch_get_main_queue(), {
+                self.performSegueWithIdentifier("loginUdacitySeg", sender: nil)
+            })
+        }
 
+        // this should excecute the operation in order. 
+       let networkQueue = NSOperationQueue()
+        networkQueue.addOperation(networkOpUdacityLogin)
+        networkQueue.addOperation(networkOpGetUdacityFullName)
+  
     }
     
     @IBAction func singupOnTheWeb(sender: UIButton) {
@@ -33,6 +58,7 @@ class LogInViewController: UIViewController {
             UIApplication.sharedApplication().openURL(udacitySignupURL)
         }
     }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -13,13 +13,12 @@ enum Udacity{
 }
 
 enum UserDefault{
-    static let loginJSONResponseKey = "loginJSONResponse"
+    private static var defaults:NSUserDefaults  { return NSUserDefaults.standardUserDefaults() }
     
     private static let userEmailKey: String = "udacityUserEmail"
     private static let userPasswordKey: String = "udacityUserPassword"
     
     static func getCredentials() -> (email:String, password:String){
-        let defaults = NSUserDefaults.standardUserDefaults()
         if let udacityUserEmail = defaults.stringForKey(userEmailKey),
             let udacityUserPassword = defaults.stringForKey(userPasswordKey){
             return (udacityUserEmail, udacityUserPassword)
@@ -33,24 +32,62 @@ enum UserDefault{
         NSUserDefaults.standardUserDefaults().setObject(password, forKey: userPasswordKey)
     }
     
-    static func getLoginDataResponse()->NSData?{
-        let defaults = NSUserDefaults.standardUserDefaults()
-        return defaults.dataForKey(ConnectionType.login.rawValue)
-    }
-    
     static func getLoginJSONDictionary()-> NSDictionary? {
-        let defaults = NSUserDefaults.standardUserDefaults()
-        if let dictionary = defaults.dictionaryForKey(loginJSONResponseKey) {
-            return dictionary as NSDictionary
-        } else {
-            return nil
+        var jsonDict:NSDictionary?
+        if let data = defaults.dataForKey(ConnectionType.login.rawValue) {
+            let subData =  data.subdataWithRange(NSMakeRange(5, data.length - 5 ))
+            
+            do {
+                jsonDict  = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as? NSDictionary
+            } catch {
+                print(error)
+            }
         }
+        return jsonDict
     }
     
     static func getHTTPBodyUdacityPayload() -> NSData?{
         let (email, password) = UserDefault.getCredentials()
         let object  = ["udacity" : ["username" : email, "password" : password]]
         return try? NSJSONSerialization.dataWithJSONObject(object, options: [])
+
+    }
+    
+    static func getFullNameFromJSONDictionary()->(fist:String, last:String, nick:String)?{
+        var first:String = ""
+        var last:String = ""
+        var nick:String = ""
+        
+        if let data = defaults.dataForKey(ConnectionType.getFullName.rawValue) {
+            let subData = data.subdataWithRange(NSMakeRange(5, data.length - 5))
+            do {
+                let response = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as! NSDictionary
+                
+                if let user = response["user"],
+                    let lastname = user["last_name"] as? String,
+                    let nickname = user["nickname"] as? String,
+                    let firstname = user["first_name"] as? String {
+                    (first, last, nick) = (firstname, lastname, nickname)
+                }
+                
+            } catch {
+            print(error)
+                return nil
+            }
+        }
+        return (first, last, nick)
+    }
+    
+    
+    static func getUserId()->String{
+        if let response = getLoginJSONDictionary(),
+            let account = response["account"],
+            let id = account["key"],
+            let accountID = id as? String {
+            return accountID
+        } else {
+            return ""
+        }
 
     }
     

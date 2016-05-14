@@ -79,37 +79,6 @@
             </objects>
             <point key="canvasLocation" x="1562" y="360"/>
         </scene>
-        <!--LogIn-->
-        <scene sceneID="nZN-bQ-7zZ">
-            <objects>
-                <viewController id="aHT-Ro-vAY" userLabel="LogIn" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="RSe-Wa-UNb"/>
-                        <viewControllerLayoutGuide type="bottom" id="1Od-4R-XFn"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="tZW-K9-t9j">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Egf-jt-IBd">
-                                <rect key="frame" x="281" y="285" width="38" height="30"/>
-                                <state key="normal" title="LogIn"/>
-                                <connections>
-                                    <segue destination="49e-Tb-3d3" kind="show" id="GQl-ho-RrH"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="Egf-jt-IBd" firstAttribute="centerX" secondItem="tZW-K9-t9j" secondAttribute="centerX" id="llZ-9F-6PW"/>
-                            <constraint firstItem="Egf-jt-IBd" firstAttribute="centerY" secondItem="tZW-K9-t9j" secondAttribute="centerY" id="usb-SW-rr1"/>
-                        </constraints>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="xVA-Ii-J3l" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-754" y="-1"/>
-        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="yl2-sM-qoP">
             <objects>
@@ -278,11 +247,12 @@
                         <outlet property="emailTextField" destination="BhP-LD-Bzg" id="Y4W-td-6US"/>
                         <outlet property="loginGraphic" destination="LBw-A9-SDF" id="Avw-DK-yMk"/>
                         <outlet property="passwordTextField" destination="VX7-wz-7zE" id="DZc-ac-V5g"/>
+                        <segue destination="49e-Tb-3d3" kind="show" identifier="loginUdacitySeg" id="fOP-Xm-7Si"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qwc-J1-SYa" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1526" y="-24"/>
+            <point key="canvasLocation" x="-812" y="0.0"/>
         </scene>
     </scenes>
     <resources>
