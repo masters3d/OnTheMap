@@ -12,8 +12,8 @@ enum Udacity{
     static let urlSignUpString: String = "https://www.udacity.com/account/auth#!/signup"
 }
 
-enum UserDefault{
-    private static var defaults:NSUserDefaults  { return NSUserDefaults.standardUserDefaults() }
+enum UserDefault {
+    private static let defaults = NSUserDefaults.standardUserDefaults()
     
     private static let userEmailKey: String = "udacityUserEmail"
     private static let userPasswordKey: String = "udacityUserPassword"
@@ -57,12 +57,10 @@ enum UserDefault{
         var first:String = ""
         var last:String = ""
         var nick:String = ""
-        
         if let data = defaults.dataForKey(UdacityConnectionType.getFullName.rawValue) {
             let subData = data.subdataWithRange(NSMakeRange(5, data.length - 5))
             do {
                 let response = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as! NSDictionary
-                
                 if let user = response["user"],
                     let lastname = user["last_name"] as? String,
                     let nickname = user["nickname"] as? String,
@@ -88,7 +86,13 @@ enum UserDefault{
         } else {
             return ""
         }
-
+    }
+    
+    static func deleteUserSavedData(){
+        defaults.setObject(nil, forKey: UdacityConnectionType.login.rawValue)
+        defaults.setObject(nil, forKey: UdacityConnectionType.getFullName.rawValue)
+        defaults.setObject(nil, forKey: UserDefault.userEmailKey )
+        defaults.setObject(nil, forKey: UserDefault.userPasswordKey )
     }
     
 }

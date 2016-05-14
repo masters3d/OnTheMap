@@ -17,11 +17,8 @@ extension UIViewController {
             if let block = block {
                 block()
             }
-            // Deleting user Defaults Values
-            
-        NSUserDefaults.standardUserDefaults().setObject(nil, forKey: UdacityConnectionType.login.rawValue)
-        NSUserDefaults.standardUserDefaults().setObject(nil, forKey: UdacityConnectionType.getFullName.rawValue)
-            
+        // Deleting user Defaults Values
+            UserDefault.deleteUserSavedData()
         })
         logoutActionSheet.addAction(logoutConfirmed)
         let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
