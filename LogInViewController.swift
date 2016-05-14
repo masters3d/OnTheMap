@@ -8,7 +8,31 @@
 
 import UIKit
 
-class LogInViewController: UIViewController {
+class LogInViewController: UIViewController,ErrorReportingFromNetworkProtocol {
+    
+    private(set) var errorReported:ErrorType?
+    
+    func reportErrorFromOperation(operationError: ErrorType?) {
+        if let operationError = operationError {
+            self.errorReported = operationError
+            let descriptionError = (operationError as NSError).localizedDescription
+            let errorActionSheet = UIAlertController(title: "Error", message: descriptionError, preferredStyle: .Alert)
+            let tryAgain = UIAlertAction(title: "Try Again?", style: .Default, handler: nil)
+            errorActionSheet.addAction(tryAgain)
+            let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+            errorActionSheet.addAction(cancel)
+            self.presentViewController(errorActionSheet, animated: true, completion: { self.activityIndicator.stopAnimating() })
+        } else {
+            self.errorReported = nil
+        }
+    }
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+        if identifier == "loginUdacitySeg" && errorReported != nil {
+            return false
+        }
+        return true
+    }
     
     @IBOutlet weak var emailTextField: UITextField!
     
@@ -23,30 +47,18 @@ class LogInViewController: UIViewController {
         self.view.endEditing(true)
         activityIndicator.startAnimating()
         
-        // Network Operations
-//        let networkOpUdacityLogin = NetworkOperation(typeOfConnection: .login )
-//        networkOpUdacityLogin.completionBlock = {
-//            let networkOpGetUdacityFullName = NetworkOperation(typeOfConnection: .getFullName)
-//            networkOpGetUdacityFullName.completionBlock = {
-//            dispatch_async(dispatch_get_main_queue(), {
-//                self.performSegueWithIdentifier("loginUdacitySeg", sender: nil)
-//            })
-//            }
-//            networkOpGetUdacityFullName.start()
-//        }
-//        networkOpUdacityLogin.start()
-        
-        
         let networkOpUdacityLogin       = NetworkOperation(typeOfConnection: .login )
         let networkOpGetUdacityFullName = NetworkOperation(typeOfConnection: .getFullName)
+        networkOpUdacityLogin.delegate = self
+        networkOpGetUdacityFullName.delegate = self
         networkOpGetUdacityFullName.addDependency(networkOpUdacityLogin)
         networkOpGetUdacityFullName.completionBlock = {
             dispatch_async(dispatch_get_main_queue(), {
-                self.performSegueWithIdentifier("loginUdacitySeg", sender: nil)
+                if self.shouldPerformSegueWithIdentifier("loginUdacitySeg", sender: nil) {
+                    self.performSegueWithIdentifier("loginUdacitySeg", sender: nil) }
             })
         }
-
-        // this should excecute the operation in order. 
+        // this should excecute the operations in order.
        let networkQueue = NSOperationQueue()
         networkQueue.addOperation(networkOpUdacityLogin)
         networkQueue.addOperation(networkOpGetUdacityFullName)
@@ -58,7 +70,6 @@ class LogInViewController: UIViewController {
             UIApplication.sharedApplication().openURL(udacitySignupURL)
         }
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()

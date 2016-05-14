@@ -8,7 +8,16 @@
 
 import UIKit
 
+protocol ErrorReportingFromNetworkProtocol {
+    func reportErrorFromOperation(operationError:ErrorType?)
+    var errorReported:ErrorType? {get}
+
+}
+
 class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
+    //Error Reporting
+    var delegate:ErrorReportingFromNetworkProtocol?
+    
     // custom fields
     private var url:NSURL?
     private var keyString:String?
@@ -32,6 +41,12 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
     }
     
     override func start() {
+        
+        // clears up any errors in the delagate
+        dispatch_async(dispatch_get_main_queue(), {
+            self.delegate?.reportErrorFromOperation(nil)
+        })
+        
         if cancelled {
             finished = true
             return
@@ -63,11 +78,14 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
         
         switch httpResponse.statusCode{
         case 200:
-            
             completionHandler(.Allow)
            
         default:
-            print("Something is wrong: \(httpResponse.statusCode)")
+            let connectionError = NSError(domain: "Check your login information.", code: httpResponse.statusCode, userInfo: nil)
+            print(connectionError.localizedDescription)
+            dispatch_async(dispatch_get_main_queue(), {
+                self.delegate?.reportErrorFromOperation(connectionError)
+            })
             completionHandler(.Cancel)
             finished = true
         }
@@ -80,6 +98,11 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
     func URLSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
         if let error = error {
             print("Failed! \(error)")
+            // sending error to delagate UI on the main queue
+            dispatch_async(dispatch_get_main_queue(), {
+                self.delegate?.reportErrorFromOperation(error)
+            })
+            
             finished = true
             return
         }
