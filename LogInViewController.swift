@@ -85,20 +85,29 @@ class LogInViewController: UIViewController,ErrorReportingFromNetworkProtocol {
         super.viewWillAppear(animated)
         subscribeToKeyboardNotifications()
     }
-    
+
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         unsubscribeFromKeyboardNotifications()
     }
+}
+
+
+// MARK: Text Field Deleagates
+extension LogInViewController{
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+    //Keyboard will show and hide
+    override func keyboardWillShow(notification: NSNotification) {
+        if emailTextField.isFirstResponder() || passwordTextField.isFirstResponder(){
+            view.frame.origin.y = -self.loginGraphic.bounds.minY - 8 // sits righ underneeth loginGraphic
+        }
     }
+    
 }
 
 // MARK: User Default
 extension LogInViewController{
-
+    
     private func saveCredentialsToUserDefaults(){
         UserDefault.setCredentials(emailTextField.text ?? "", password: passwordTextField.text ?? "")
     }
@@ -108,42 +117,4 @@ extension LogInViewController{
         emailTextField.text = email
         passwordTextField.text = password
     }
-}
-
-// MARK: Text Field Deleagates
-extension LogInViewController: UITextFieldDelegate, UITextViewDelegate{
-    
-    // this sets the delagates on all the text fields in this view.
-    func assingDelegateToTextFields(){
-        self.emailTextField.delegate = self
-        self.passwordTextField.delegate = self
-    }
-    
-    func subscribeToKeyboardNotifications() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(LogInViewController.keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(LogInViewController.keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
-    }
-    
-    func unsubscribeFromKeyboardNotifications() {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
-    }
-    
-    //Keyboard will show and hide
-    func keyboardWillShow(notification: NSNotification) {
-        if emailTextField.isFirstResponder() || passwordTextField.isFirstResponder(){
-            view.frame.origin.y = -self.loginGraphic.bounds.minY - 8 // sits righ underneeth loginGraphic
-        }
-    }
-    
-    func keyboardWillHide(notification: NSNotification) {
-        view.frame.origin.y = 0.0
-    }
-    
-    // Hide the keyboard when user hits the return key
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    } 
-    
 }

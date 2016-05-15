@@ -27,16 +27,34 @@ class PostingViewController:UIViewController{
     @IBAction func findOnMapButton(sender: UIButton) {
     }
     
-    //MARK:- LifeCycle
+//MARK:- LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBarHidden = true
         tabBarController?.tabBar.hidden = true
+        assingDelegateToTextFields()
     }
     
     override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
         self.navigationController?.navigationBarHidden = false
         tabBarController?.tabBar.hidden = false
-        
+        unsubscribeFromKeyboardNotifications()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        subscribeToKeyboardNotifications()
     }
 }
+    
+// MARK: Text Field Deleagates
+extension PostingViewController{
+    // this sets the delagates on all the text fields in this view.
+    override func assingDelegateToTextFields(){
+        enterLinkTextField.delegate = self
+        enterLocationTextField.delegate = self
+    }
+    
+}
+

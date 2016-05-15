@@ -11,7 +11,6 @@ import UIKit
 protocol ErrorReportingFromNetworkProtocol {
     func reportErrorFromOperation(operationError:ErrorType?)
     var errorReported:ErrorType? {get}
-
 }
 
 class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
@@ -60,7 +59,6 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
         startTime = NSDate.timeIntervalSinceReferenceDate()
         task.resume()
         }
-        
     }
     
     init(url:NSURL, keyForData:String){

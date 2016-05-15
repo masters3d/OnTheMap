@@ -26,7 +26,6 @@ extension UIViewController {
         presentViewController(logoutActionSheet, animated: true, completion: nil)
     }
     
-    
     func presentErrorPopUp(description:String, inout presentingError:Bool){
         presentingError = true
         let errorActionSheet = UIAlertController(title: "Error", message: description, preferredStyle: .Alert)
@@ -36,6 +35,50 @@ extension UIViewController {
         errorActionSheet.addAction(cancel)
         self.presentViewController(errorActionSheet, animated: true, completion: { })
     }
+  }
+
+//MARK:-Keyboard code
+extension UIViewController:UITextFieldDelegate, UITextViewDelegate {
+
+    func keyboardWillHide(notification: NSNotification) {
+        view.frame.origin.y = 0.0
+    }
+    // this needs to be overitten by class that wants keboard support
+    func keyboardWillShow(notification: NSNotification) {
+    }
+    
+    func subscribeToKeyboardNotifications() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
+    }
+    
+    func unsubscribeFromKeyboardNotifications() {
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+    }
+
+    // Hide the keyboard when user hits the return key
+     public func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    
+    // Automaticly sets the deltegates to all the UITextFields on the top view
+    func setDelegate(field:UITextField){
+        field.delegate = self
+    }
+    
+    // Does not work for nested UITextField
+    func assingDelegateToTextFields(){
+        for each in view.subviews {
+            if (each is UITextField) {
+                let field = each as! UITextField
+                setDelegate(field)
+            }
+        }
+    }
+
     
 }
 

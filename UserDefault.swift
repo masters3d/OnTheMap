@@ -67,7 +67,6 @@ enum UserDefault {
                     let firstname = user["first_name"] as? String {
                     (first, last, nick) = (firstname, lastname, nickname)
                 }
-                
             } catch {
             print(error)
                 return nil
@@ -94,5 +93,4 @@ enum UserDefault {
         defaults.setObject(nil, forKey: UserDefault.userEmailKey )
         defaults.setObject(nil, forKey: UserDefault.userPasswordKey )
     }
-    
 }
