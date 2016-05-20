@@ -32,6 +32,8 @@ class PostingViewController:UIViewController{
         super.viewDidLoad()
         self.navigationController?.navigationBarHidden = true
         tabBarController?.tabBar.hidden = true
+        
+        // automaticly sets up the keyboard delegates
         assingDelegateToTextFields()
     }
     
@@ -39,22 +41,19 @@ class PostingViewController:UIViewController{
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBarHidden = false
         tabBarController?.tabBar.hidden = false
+        
+        // Part of the text delates methods
         unsubscribeFromKeyboardNotifications()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        // Part of the text delates methods
         subscribeToKeyboardNotifications()
     }
 }
+
     
-// MARK: Text Field Deleagates
-extension PostingViewController{
-    // this sets the delagates on all the text fields in this view.
-    override func assingDelegateToTextFields(){
-        enterLinkTextField.delegate = self
-        enterLocationTextField.delegate = self
-    }
-    
-}
+
 

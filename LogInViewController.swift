@@ -77,17 +77,23 @@ class LogInViewController: UIViewController,ErrorReportingFromNetworkProtocol {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        assingDelegateToTextFields()
         loadCredentialsFromUserDefaults()
+        
+        // part of the text delegates
+        assingDelegateToTextFields()
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        //part of the Text delefates handeling
         subscribeToKeyboardNotifications()
     }
 
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
+        
+        //part of the Text delefates handeling
         unsubscribeFromKeyboardNotifications()
     }
 }
@@ -102,7 +108,6 @@ extension LogInViewController{
             view.frame.origin.y = -self.loginGraphic.bounds.minY - 8 // sits righ underneeth loginGraphic
         }
     }
-    
 }
 
 // MARK: User Default

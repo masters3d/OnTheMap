@@ -8,7 +8,6 @@ import UIKit
 
 class PinViewController: UIViewController {
 
-   
     @IBAction func logout(sender: UIBarButtonItem) {
         logoutPerformer()
     }
