@@ -18,18 +18,18 @@ enum UserDefault {
     private static let userEmailKey: String = "udacityUserEmail"
     private static let userPasswordKey: String = "udacityUserPassword"
     
-    static func getCredentials() -> (email:String, password:String){
+    static func getCredentials() -> (email:String, password:String)?{
         if let udacityUserEmail = defaults.stringForKey(userEmailKey),
             let udacityUserPassword = defaults.stringForKey(userPasswordKey){
             return (udacityUserEmail, udacityUserPassword)
         } else {
-            return ("","")
+            return nil
         }
     }
 
     static func setCredentials(email:String, password:String){
-        NSUserDefaults.standardUserDefaults().setObject(email, forKey: userEmailKey)
-        NSUserDefaults.standardUserDefaults().setObject(password, forKey: userPasswordKey)
+        defaults.setObject(email, forKey: userEmailKey)
+        defaults.setObject(password, forKey: userPasswordKey)
     }
     
     static func getLoginJSONDictionary()-> NSDictionary? {
@@ -39,15 +39,20 @@ enum UserDefault {
             
             do {
                 jsonDict  = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as? NSDictionary
+            
             } catch {
-                print(error)
+                print("error parsing the udacity connection \(error)")
             }
         }
         return jsonDict
     }
     
     static func getHTTPBodyUdacityPayload() -> NSData?{
-        let (email, password) = UserDefault.getCredentials()
+        guard let (email, password) = UserDefault.getCredentials() else {
+            return nil
+        }
+        
+        
         let object  = ["udacity" : ["username" : email, "password" : password]]
         return try? NSJSONSerialization.dataWithJSONObject(object, options: [])
 
@@ -76,21 +81,21 @@ enum UserDefault {
     }
     
     
-    static func getUserId()->String{
+    static func getUserId()->String?{
         if let response = getLoginJSONDictionary(),
             let account = response["account"],
             let id = account["key"],
             let accountID = id as? String {
             return accountID
         } else {
-            return ""
+            return nil
         }
     }
     
     static func deleteUserSavedData(){
-        defaults.setObject(nil, forKey: UdacityConnectionType.login.rawValue)
-        defaults.setObject(nil, forKey: UdacityConnectionType.getFullName.rawValue)
-        defaults.setObject(nil, forKey: UserDefault.userEmailKey )
-        defaults.setObject(nil, forKey: UserDefault.userPasswordKey )
+        NSUserDefaults.resetStandardUserDefaults()
+        
+    print()
+    
     }
 }

@@ -133,7 +133,8 @@ extension NetworkOperation {
             request?.HTTPBody = UserDefault.getHTTPBodyUdacityPayload()
             
         case .getFullName:
-            self.init(url:NSURL(string: "https://www.udacity.com/api/users/" + "\(UserDefault.getUserId())")!, keyForData:UdacityConnectionType.getFullName.rawValue)
+            let userID = UserDefault.getUserId() ?? ""
+            self.init(url:NSURL(string: "https://www.udacity.com/api/users/" + "\(userID)")!, keyForData:UdacityConnectionType.getFullName.rawValue)
         }
     }
 }

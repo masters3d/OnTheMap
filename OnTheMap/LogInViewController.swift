@@ -19,9 +19,11 @@ class LogInViewController: UIViewController,ErrorReportingFromNetworkProtocol {
     @IBOutlet weak var loginGraphic: UIButton!
     
     @IBAction func loginToUdacity(sender: UIButton) {
-        saveCredentialsToUserDefaults()
+        UserDefault.setCredentials(emailTextField.text ?? "", password: passwordTextField.text ?? "")
+
         self.view.endEditing(true)
         activityIndicator.startAnimating()
+        self.presentingAlert = false
         
         let networkOpUdacityLogin       = NetworkOperation(typeOfConnection: .login )
         let networkOpGetUdacityFullName = NetworkOperation(typeOfConnection: .getFullName)
@@ -77,10 +79,23 @@ class LogInViewController: UIViewController,ErrorReportingFromNetworkProtocol {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadCredentialsFromUserDefaults()
+        
+        let (email, password) = UserDefault.getCredentials() ?? ("", "")
+        
+        emailTextField.text  = email
+        passwordTextField.text = password
         
         // part of the text delegates
         assingDelegateToTextFields()
+        
+        //log in if the credential are already saved
+        
+         dispatch_async(dispatch_get_main_queue(), {
+        if (!email.isEmpty && !password.isEmpty) {
+            self.performSegueWithIdentifier("loginUdacitySeg", sender: nil)
+        }
+        })
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -110,16 +125,4 @@ extension LogInViewController{
     }
 }
 
-// MARK: User Default
-extension LogInViewController{
-    
-    private func saveCredentialsToUserDefaults(){
-        UserDefault.setCredentials(emailTextField.text ?? "", password: passwordTextField.text ?? "")
-    }
-    
-    private func loadCredentialsFromUserDefaults(){
-        let (email, password) = UserDefault.getCredentials()
-        emailTextField.text = email
-        passwordTextField.text = password
-    }
-}
+

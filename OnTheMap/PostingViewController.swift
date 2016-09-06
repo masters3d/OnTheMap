@@ -25,6 +25,8 @@ class PostingViewController:UIViewController{
     }
     
     @IBAction func findOnMapButton(sender: UIButton) {
+        self.enterLocationTextField.hidden = true
+        self.enterLinkTextField.hidden = false
     }
     
 //MARK:- LifeCycle
@@ -32,6 +34,11 @@ class PostingViewController:UIViewController{
         super.viewDidLoad()
         self.navigationController?.navigationBarHidden = true
         tabBarController?.tabBar.hidden = true
+        
+        
+        
+        // hide the web link
+        self.enterLinkTextField.hidden = true
         
         // automaticly sets up the keyboard delegates
         assingDelegateToTextFields()
