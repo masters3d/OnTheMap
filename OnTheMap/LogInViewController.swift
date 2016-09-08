@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LogInViewController: UIViewController,ErrorReportingFromNetworkProtocol {
+class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
     
     @IBOutlet weak var emailTextField: UITextField!
     

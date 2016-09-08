@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="3bA-zq-Ce1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="3bA-zq-Ce1">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -307,7 +307,7 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="n4g-nH-nOq">
                                 <rect key="frame" x="0.0" y="189" width="600" height="362"/>
                             </mapView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y9D-Ty-a0T">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y9D-Ty-a0T" userLabel="backgroundCover">
                                 <rect key="frame" x="0.0" y="189" width="600" height="362"/>
                                 <subviews>
                                     <textField clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Location here" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="o1L-Bv-aWV" userLabel="EnterLocation">
@@ -326,14 +326,14 @@
                                     <constraint firstAttribute="trailing" secondItem="o1L-Bv-aWV" secondAttribute="trailing" constant="8" id="p35-XU-OW4"/>
                                 </constraints>
                             </view>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OJo-A3-hfP">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OJo-A3-hfP" userLabel="Submit Button">
                                 <rect key="frame" x="265" y="473" width="71" height="30"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" red="0.28802427180000001" green="0.47611534909999997" blue="0.68278681289999998" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="71" id="zOA-RP-hYR"/>
                                 </constraints>
                                 <state key="normal" title="Submit">
-                                    <color key="titleColor" red="0.28802427180000001" green="0.47611534909999997" blue="0.68278681289999998" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="submitButton:" destination="W60-Wq-204" eventType="touchUpInside" id="1hu-X2-GYF"/>
@@ -358,21 +358,24 @@
                                     <constraint firstAttribute="width" constant="118" id="Oda-K8-HXh"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Web Link here" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="S1m-JG-9GH" userLabel="EnterLink">
                                 <rect key="frame" x="8" y="157" width="584" height="30"/>
                                 <color key="backgroundColor" red="0.28802427180000001" green="0.47611534909999997" blue="0.68278681289999998" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" keyboardType="URL"/>
                             </textField>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="ZIb-38-b0y">
+                                <rect key="frame" x="290" y="360" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
-                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="n4g-nH-nOq" firstAttribute="bottom" secondItem="EXq-JJ-g7v" secondAttribute="top" id="5Yu-Db-Nuo"/>
+                            <constraint firstItem="ZIb-38-b0y" firstAttribute="centerX" secondItem="n4g-nH-nOq" secondAttribute="centerX" id="6kq-38-xcd"/>
                             <constraint firstItem="EXq-JJ-g7v" firstAttribute="top" secondItem="n4g-nH-nOq" secondAttribute="bottom" id="Bxj-GX-bgs"/>
                             <constraint firstItem="dFJ-DK-X8T" firstAttribute="top" secondItem="n4g-nH-nOq" secondAttribute="bottom" constant="8" symbolic="YES" id="ELF-KI-gWv"/>
                             <constraint firstItem="dFJ-DK-X8T" firstAttribute="centerX" secondItem="Y9D-Ty-a0T" secondAttribute="centerX" id="Egl-wh-V0t"/>
@@ -381,6 +384,7 @@
                             <constraint firstItem="S1m-JG-9GH" firstAttribute="top" secondItem="wYQ-dY-ysx" secondAttribute="top" constant="157" id="Khb-KF-bHn"/>
                             <constraint firstItem="dFJ-DK-X8T" firstAttribute="centerX" secondItem="n4g-nH-nOq" secondAttribute="centerX" id="SSG-rC-Jer"/>
                             <constraint firstItem="MXm-OL-m6P" firstAttribute="top" secondItem="ayf-31-pP3" secondAttribute="bottom" id="T5O-On-BX6"/>
+                            <constraint firstItem="ZIb-38-b0y" firstAttribute="centerY" secondItem="n4g-nH-nOq" secondAttribute="centerY" id="UyV-nO-pRj"/>
                             <constraint firstItem="Y9D-Ty-a0T" firstAttribute="leading" secondItem="wYQ-dY-ysx" secondAttribute="leadingMargin" constant="-20" id="XAW-U7-n92"/>
                             <constraint firstItem="OJo-A3-hfP" firstAttribute="top" secondItem="dFJ-DK-X8T" secondAttribute="bottom" constant="8" symbolic="YES" id="ZBM-Yi-GFw"/>
                             <constraint firstAttribute="trailingMargin" secondItem="MXm-OL-m6P" secondAttribute="trailing" id="bXh-nP-5PG"/>
@@ -411,9 +415,13 @@
                         </variation>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="ZIb-38-b0y" id="VNg-tc-AxQ"/>
+                        <outlet property="backgroundCover" destination="Y9D-Ty-a0T" id="LEq-dC-vwF"/>
                         <outlet property="enterLinkTextField" destination="S1m-JG-9GH" id="bTK-k0-b9a"/>
                         <outlet property="enterLocationTextField" destination="o1L-Bv-aWV" id="kCS-cp-ed0"/>
+                        <outlet property="findOnMapButton" destination="dFJ-DK-X8T" id="g69-fg-MP7"/>
                         <outlet property="mapView" destination="n4g-nH-nOq" id="cqv-Y9-S3i"/>
+                        <outlet property="submitButton" destination="OJo-A3-hfP" id="ud1-8u-Xf5"/>
                         <outlet property="whereAreYouStuding" destination="raS-Sr-HzD" id="sFU-gl-2W6"/>
                     </connections>
                 </viewController>
