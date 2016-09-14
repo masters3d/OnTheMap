@@ -22,12 +22,17 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="hNp-oP-XRT">
                                 <rect key="frame" x="0.0" y="64" width="600" height="487"/>
                             </mapView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="eCV-8e-epM">
+                                <rect key="frame" x="290" y="298" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="hNp-oP-XRT" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" id="GQU-JH-hlZ"/>
                             <constraint firstItem="hNp-oP-XRT" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-20" id="c0V-1u-nrp"/>
+                            <constraint firstItem="eCV-8e-epM" firstAttribute="centerX" secondItem="hNp-oP-XRT" secondAttribute="centerX" id="heC-Vp-YuS"/>
                             <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="hNp-oP-XRT" secondAttribute="bottom" id="qLA-9m-ltF"/>
+                            <constraint firstItem="eCV-8e-epM" firstAttribute="centerY" secondItem="hNp-oP-XRT" secondAttribute="centerY" id="t5L-4Q-24h"/>
                             <constraint firstAttribute="trailingMargin" secondItem="hNp-oP-XRT" secondAttribute="trailing" constant="-20" id="xCZ-dd-CGO"/>
                         </constraints>
                     </view>
@@ -38,7 +43,11 @@
                             </connections>
                         </barButtonItem>
                         <rightBarButtonItems>
-                            <barButtonItem systemItem="refresh" id="GYs-RY-6Fi"/>
+                            <barButtonItem systemItem="refresh" id="GYs-RY-6Fi">
+                                <connections>
+                                    <action selector="refreshUserLocations:" destination="9pv-A4-QxB" id="Bw5-yK-Wed"/>
+                                </connections>
+                            </barButtonItem>
                             <barButtonItem image="pin" id="OQl-1D-OdX">
                                 <connections>
                                     <segue destination="W60-Wq-204" kind="show" id="hrZ-vT-7x3"/>
@@ -47,6 +56,7 @@
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
+                        <outlet property="activityIndicator" destination="eCV-8e-epM" id="h1W-NN-Mot"/>
                         <outlet property="mapView" destination="hNp-oP-XRT" id="MHC-Si-zV9"/>
                     </connections>
                 </viewController>
@@ -437,6 +447,6 @@
         <image name="udacity" width="492" height="492"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Xo9-XP-F8I"/>
+        <segue reference="hrZ-vT-7x3"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -98,4 +98,21 @@ enum UserDefault {
     print()
     
     }
+    
+    //MARK:- Parse 
+    
+    
+    static func getParseUserLocations() -> NSDictionary? {
+        guard let data = defaults.dataForKey(ParseConnectionType.getStudentLocationsWithLimit.rawValue) else { return nil }
+        var jsonDict:NSDictionary?
+        do {
+            jsonDict  = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves) as? NSDictionary
+            
+        } catch {
+            print("error parsing the Parse connection \(error)")
+        }
+        
+        return jsonDict
+    
+    }
 }

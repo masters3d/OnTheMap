@@ -7,10 +7,10 @@ import UIKit
 import MapKit
 
 
-class MapViewController: UIViewController, MKMapViewDelegate{
-
+class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFromNetworkProtocol{
     @IBOutlet weak var mapView: MKMapView!
     
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBAction func logout(sender: UIBarButtonItem) {
          logoutPerformer()
     }
@@ -18,36 +18,78 @@ class MapViewController: UIViewController, MKMapViewDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.delegate = self
-        
-        let locations = hardCodedLocationData()
-        var annotations = [MKPointAnnotation]()
-        
-        for dictionary in locations {
-            
-            // Notice that the float values are being used to create CLLocationDegree values.
-            // This is a version of the Double type.
-            let lat = CLLocationDegrees(dictionary["latitude"] as! Double)
-            let long = CLLocationDegrees(dictionary["longitude"] as! Double)
-            
-            // The lat and long are used to create a CLLocationCoordinates2D instance.
-            let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
-            
-            let first = dictionary["firstName"] as! String
-            let last = dictionary["lastName"] as! String
-            let mediaURL = dictionary["mediaURL"] as! String
-            
-            // Here we create the annotation and set its coordiate, title, and subtitle properties
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            annotation.title = "\(first) \(last)"
-            annotation.subtitle = mediaURL
-            
-            // Finally we place the annotation in an array of annotations.
-            annotations.append(annotation)
+    }
+    
+    @IBAction func refreshUserLocations(sender: UIBarButtonItem) {
+        self.presentingAlert = false
+        getUsersLocationsFromServer()
+    }
+    func getUsersLocationsFromServer() {
+    
+        activityIndicator.startAnimating()
+        let userLocationOperation = NetworkOperation(typeOfConnection: .getStudentLocationsWithLimit)
+        userLocationOperation.delegate = self
+        userLocationOperation.completionBlock = {
+            dispatch_async(dispatch_get_main_queue(), {
+                
+                var usersLocations = [UserLocation]()
+                if let dict = UserDefault.getParseUserLocations(),
+                    let arrayDict = dict["results"] as? NSArray,
+                    let result = arrayDict as? [NSDictionary] {
+                    
+                    usersLocations = result.flatMap{UserLocation($0)}
+                }
+                self.mapView.addAnnotations(
+                    usersLocations.flatMap{
+                        let lat = CLLocationDegrees($0.latitude)
+                        let long = CLLocationDegrees($0.longitude)
+                        let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
+                        let annotation = MKPointAnnotation()
+                        annotation.coordinate = coordinate
+                        annotation.title = "\($0.firstName) \($0.lastName)"
+                        annotation.subtitle = $0.mediaURL
+                        return annotation
+                    }
+                )
+                
+            self.activityIndicator.stopAnimating()
+            })
         }
-        
-        // When the array is complete, we add the annotations to the map.
-        self.mapView.addAnnotations(annotations)
+        userLocationOperation.start()
+    
+    }
+    
+//    func getUsersLocations() -> [UserLocation]{
+//        var usersLocations = [UserLocation]()
+//        
+//        if UserDefault.getParseUserLocations() == nil {
+//            getUsersLocationsFromServer()
+//        }
+//        
+//        if let dict = UserDefault.getParseUserLocations(),
+//            let arrayDict = dict["results"] as? NSArray,
+//            let result = arrayDict as? [NSDictionary] {
+//            usersLocations = result.flatMap(UserLocation.init)
+//        }
+//        return usersLocations
+//    }
+
+//MARK:- Error Reporting Code
+    
+    private(set) var errorReported:ErrorType?
+    private var presentingAlert:Bool = false
+    
+    func reportErrorFromOperation(operationError: ErrorType?) {
+        if let operationError = operationError where
+            self.errorReported == nil && presentingAlert == false {
+            self.errorReported = operationError
+            let descriptionError = (operationError as NSError).localizedDescription
+            self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
+            self.activityIndicator.stopAnimating()
+            
+        } else {
+            self.errorReported = nil
+        }
     }
 
     
@@ -100,7 +142,7 @@ class MapViewController: UIViewController, MKMapViewDelegate{
     // Some sample data. This is a dictionary that is more or less similar to the
     // JSON data that you will download from Parse.
     
-    func hardCodedLocationData() -> [[String : AnyObject]] {
+    func locationData() -> [[String : AnyObject]] {
         return  [
             [
                 "createdAt" : "2015-02-24T22:27:14.456Z",

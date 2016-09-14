@@ -20,6 +20,7 @@
 		1ED098E71BE3BF8E0093EED9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1ED098E51BE3BF8E0093EED9 /* LaunchScreen.storyboard */; };
 		1ED098F21BE3BF8F0093EED9 /* OnTheMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED098F11BE3BF8F0093EED9 /* OnTheMapTests.swift */; };
 		1ED098FD1BE3BF8F0093EED9 /* OnTheMapUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED098FC1BE3BF8F0093EED9 /* OnTheMapUITests.swift */; };
+		1EEB186C1D89DAE800FD9A06 /* UserLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EEB186B1D89DAE800FD9A06 /* UserLocation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		1ED098F81BE3BF8F0093EED9 /* OnTheMapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OnTheMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1ED098FC1BE3BF8F0093EED9 /* OnTheMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnTheMapUITests.swift; sourceTree = "<group>"; };
 		1ED098FE1BE3BF8F0093EED9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1EEB186B1D89DAE800FD9A06 /* UserLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserLocation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 				1EAF38B81CE817EA0028FB2C /* App Support Items */,
 				1EA59AD91CE2CA0C007DF1D0 /* UserDefault.swift */,
 				1EA59ADB1CE2E92C007DF1D0 /* NetworkLayer.swift */,
+				1EEB186B1D89DAE800FD9A06 /* UserLocation.swift */,
 				1EAF38B71CE7E3930028FB2C /* Views */,
 			);
 			path = OnTheMap;
@@ -293,6 +296,7 @@
 				1EA59ADC1CE2E92C007DF1D0 /* NetworkLayer.swift in Sources */,
 				1EAF38B61CE7E3620028FB2C /* PostingViewController.swift in Sources */,
 				1EA59ADA1CE2CA0C007DF1D0 /* UserDefault.swift in Sources */,
+				1EEB186C1D89DAE800FD9A06 /* UserLocation.swift in Sources */,
 				1E0D81221BE3E8A0004ED43F /* LogInViewController.swift in Sources */,
 				1EAF38B41CE7AE800028FB2C /* SharedViewCode.swift in Sources */,
 				1ED098DF1BE3BF8E0093EED9 /* PinViewController.swift in Sources */,
