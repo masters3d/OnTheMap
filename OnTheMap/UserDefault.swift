@@ -101,6 +101,16 @@ enum UserDefault {
     
     //MARK:- Parse 
     
+    static func getUserLocations() -> [UserLocation] {
+        var usersLocations = [UserLocation]()
+        if let dict = UserDefault.getParseUserLocations(),
+            let arrayDict = dict["results"] as? NSArray,
+            let result = arrayDict as? [NSDictionary] {
+            usersLocations = result.flatMap(UserLocation.init)
+        }
+        return usersLocations
+    
+    }
     
     static func getParseUserLocations() -> NSDictionary? {
         guard let data = defaults.dataForKey(ParseConnectionType.getStudentLocationsWithLimit.rawValue) else { return nil }

@@ -64,60 +64,6 @@
             </objects>
             <point key="canvasLocation" x="1562" y="-320"/>
         </scene>
-        <!--PinsView-->
-        <scene sceneID="wg7-f3-ORb">
-            <objects>
-                <viewController id="8rJ-Kc-sve" userLabel="PinsView" customClass="PinViewController" customModule="OnTheMap" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="L7p-HK-0SC"/>
-                        <viewControllerLayoutGuide type="bottom" id="Djb-ko-YwX"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="QS5-Rx-YEW">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" misplaced="YES" text="LIST VIEW" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="zEq-FU-wV5">
-                                <rect key="frame" x="195" y="279" width="209.5" height="42"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="36"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loaded by SecondViewController" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NDk-cv-Gan">
-                                <rect key="frame" x="192" y="329" width="215.5" height="17"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="NDk-cv-Gan" firstAttribute="top" secondItem="zEq-FU-wV5" secondAttribute="bottom" constant="8" symbolic="YES" id="Day-4N-Vmt"/>
-                            <constraint firstItem="NDk-cv-Gan" firstAttribute="centerX" secondItem="zEq-FU-wV5" secondAttribute="centerX" id="JgO-Fn-dHn"/>
-                            <constraint firstAttribute="centerX" secondItem="zEq-FU-wV5" secondAttribute="centerX" id="qqM-NS-xev"/>
-                            <constraint firstAttribute="centerY" secondItem="zEq-FU-wV5" secondAttribute="centerY" id="qzY-Ky-pLD"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" id="ABW-LD-KSz">
-                        <barButtonItem key="leftBarButtonItem" title="Logout" id="I0n-yR-8Cm">
-                            <connections>
-                                <action selector="logout:" destination="8rJ-Kc-sve" id="D28-pm-77v"/>
-                            </connections>
-                        </barButtonItem>
-                        <rightBarButtonItems>
-                            <barButtonItem systemItem="refresh" id="5X0-eA-QZ0"/>
-                            <barButtonItem image="pin" id="2e1-sO-caV">
-                                <connections>
-                                    <segue destination="W60-Wq-204" kind="show" id="Xo9-XP-F8I"/>
-                                </connections>
-                            </barButtonItem>
-                        </rightBarButtonItems>
-                    </navigationItem>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1562" y="360"/>
-        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="yl2-sM-qoP">
             <objects>
@@ -134,6 +80,13 @@
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HuB-VB-40B" sceneMemberID="firstResponder"/>
+                <navigationItem id="hDL-WJ-5gD">
+                    <barButtonItem key="leftBarButtonItem" title="Logout" id="rCT-IJ-BBW"/>
+                    <rightBarButtonItems>
+                        <barButtonItem systemItem="refresh" id="YMA-mj-stP"/>
+                        <barButtonItem image="pin" id="Fv1-i1-uHL"/>
+                    </rightBarButtonItems>
+                </navigationItem>
             </objects>
             <point key="canvasLocation" x="0.0" y="0.0"/>
         </scene>
@@ -168,24 +121,24 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="8rJ-Kc-sve" kind="relationship" relationship="rootViewController" id="nQs-sd-5S0"/>
+                        <segue destination="krO-Ta-PF4" kind="relationship" relationship="rootViewController" id="tVs-nl-HA1"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TMK-f5-GTA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="750" y="360"/>
         </scene>
-        <!--Table View Controller-->
+        <!--Pin View Controller-->
         <scene sceneID="iUT-yN-u5b">
             <objects>
-                <tableViewController id="krO-Ta-PF4" sceneMemberID="viewController">
+                <tableViewController id="krO-Ta-PF4" customClass="PinViewController" customModule="OnTheMap" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="08z-cS-d7z">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Khe-wk-j3S">
-                                <rect key="frame" x="0.0" y="28" width="600" height="44"/>
+                                <rect key="frame" x="0.0" y="92" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Khe-wk-j3S" id="Ewq-M1-4xe">
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
@@ -198,10 +151,29 @@
                             <outlet property="delegate" destination="krO-Ta-PF4" id="ljT-6d-fMt"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" id="PBa-n0-Too">
+                        <barButtonItem key="leftBarButtonItem" title="Logout" id="QR3-mN-NMo">
+                            <connections>
+                                <action selector="logout:" destination="krO-Ta-PF4" id="2BQ-d0-uU1"/>
+                            </connections>
+                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="refresh" id="0GD-hY-Mq4">
+                                <connections>
+                                    <action selector="refreshUserLocations:" destination="krO-Ta-PF4" id="yui-CP-zyK"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem image="pin" id="r7I-Fj-IgZ">
+                                <connections>
+                                    <segue destination="W60-Wq-204" kind="show" id="e2W-nS-QnV"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Jgs-pn-gyD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1562" y="1026"/>
+            <point key="canvasLocation" x="1562" y="398"/>
         </scene>
         <!--Log In View Controller-->
         <scene sceneID="Jdr-D1-OB5">
@@ -475,6 +447,6 @@
         <image name="udacity" width="492" height="492"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Xo9-XP-F8I"/>
+        <segue reference="e2W-nS-QnV"/>
     </inferredMetricsTieBreakers>
 </document>

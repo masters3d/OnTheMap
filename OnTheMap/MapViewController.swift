@@ -57,16 +57,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFrom
     }
     
     func getUsersLocations() -> [UserLocation]{
-        var usersLocations = [UserLocation]()
-        
         getUsersLocationsFromServer()
-        
-        if let dict = UserDefault.getParseUserLocations(),
-            let arrayDict = dict["results"] as? NSArray,
-            let result = arrayDict as? [NSDictionary] {
-            usersLocations = result.flatMap(UserLocation.init)
-        }
-        return usersLocations
+        return UserDefault.getUserLocations()
+      
     }
 
 //MARK:- Error Reporting Code

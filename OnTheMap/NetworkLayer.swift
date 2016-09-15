@@ -27,6 +27,7 @@ protocol ErrorReportingFromNetworkProtocol {
     var errorReported:ErrorType? {get}
 }
 
+
 class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
     //Error Reporting
     var delegate:ErrorReportingFromNetworkProtocol?
