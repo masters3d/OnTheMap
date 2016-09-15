@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import MapKit
 
 private func log(input:Any) {
        print("UserLocation json parsing error at line: \(#line)"); print(input);
@@ -24,6 +24,19 @@ struct UserLocation {
     let objectId:String
     let uniqueKey:String
     let updatedAt:String
+    
+    var coordinate:CLLocationCoordinate2D { return CLLocationCoordinate2D(
+                                                latitude: CLLocationDegrees(latitude),
+                                                longitude: CLLocationDegrees(longitude))}
+    var fullname: String { return "\(firstName) \(lastName)" }
+
+    var annotation:MKAnnotation {
+                    let annotation = MKPointAnnotation()
+                    annotation.coordinate = coordinate
+                    annotation.title = fullname
+                    annotation.subtitle = mediaURL
+                    return annotation
+                    }
     
     init?(_ input: NSDictionary) {
         // we are seperating each guard so we can find out which one fails
@@ -51,7 +64,7 @@ struct UserLocation {
     }
 }
 
-// SAMPLE DIC
+// SAMPLE DICT
 //        {
 //            createdAt = "2016-09-14T18:54:07.423Z";
 //            firstName = Bryan;
@@ -64,3 +77,9 @@ struct UserLocation {
 //            uniqueKey = 4240088784;
 //            updatedAt = "2016-09-14T18:54:07.423Z";
 //        },
+
+//                let annotation = MKPointAnnotation()
+//                annotation.coordinate = coordinate
+//                annotation.title = "\($0.firstName) \($0.lastName)"
+//                annotation.subtitle = $0.mediaURL
+//                return annotation

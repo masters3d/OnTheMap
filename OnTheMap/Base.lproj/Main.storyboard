@@ -175,6 +175,34 @@
             </objects>
             <point key="canvasLocation" x="750" y="360"/>
         </scene>
+        <!--Table View Controller-->
+        <scene sceneID="iUT-yN-u5b">
+            <objects>
+                <tableViewController id="krO-Ta-PF4" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="08z-cS-d7z">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="Khe-wk-j3S">
+                                <rect key="frame" x="0.0" y="28" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Khe-wk-j3S" id="Ewq-M1-4xe">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="krO-Ta-PF4" id="zEc-jj-M9z"/>
+                            <outlet property="delegate" destination="krO-Ta-PF4" id="ljT-6d-fMt"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Jgs-pn-gyD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1562" y="1026"/>
+        </scene>
         <!--Log In View Controller-->
         <scene sceneID="Jdr-D1-OB5">
             <objects>
@@ -447,6 +475,6 @@
         <image name="udacity" width="492" height="492"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="hrZ-vT-7x3"/>
+        <segue reference="Xo9-XP-F8I"/>
     </inferredMetricsTieBreakers>
 </document>
