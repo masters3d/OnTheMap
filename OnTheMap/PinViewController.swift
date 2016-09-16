@@ -24,6 +24,7 @@ class PinViewController: UITableViewController {
         super.didReceiveMemoryWarning()
     }
     
+    let sampleData = ["something1", "somethng2", "something3", "Something4", "Something5"]
     
     
 //    func getUsersLocationsFromServer() {
@@ -40,19 +41,20 @@ class PinViewController: UITableViewController {
     
     // MARK: - Table view 
     
-//    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return mapLocations.locations.count
-//    }
-//    
-//    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCellWithIdentifier(ReuseIdentifierConstants.CellIdentifier, forIndexPath: indexPath)
-//        cell.imageView?.image = UIImage(named: NavigationBarConstants.PinImage)
-//        cell.textLabel?.text = "\(mapLocations.locations[indexPath.row].firstName) \(mapLocations.locations[indexPath.row].lastName)"
-//        return cell
-//    }
-//    
-//    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-//        // if the user did not enter a full URL, do a search with the mediaURL as the search term
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return sampleData.count
+    }
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("tableViewIdentifier", forIndexPath: indexPath)
+
+        cell.imageView?.image = UIImage(named: "pin")
+        cell.textLabel?.text = "\(sampleData[indexPath.row])"
+        return cell
+    }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        // if the user did not enter a full URL, do a search with the mediaURL as the search term
 //        let https = "https://"
 //        let http = "http://"
 //        let googleSearch = "https://google.com/search?q="
@@ -61,11 +63,21 @@ class PinViewController: UITableViewController {
 //        if !urlString.hasPrefix(https) && !urlString.hasPrefix(http) {
 //            urlString = googleSearch.stringByAppendingString(urlString)
 //        }
-//        let application = UIApplication.sharedApplication()
-//        if let studentURL = NSURL(string: urlString) {
-//            application.openURL(studentURL)
-//        }
-//    }
+        let application = UIApplication.sharedApplication()
+        if let studentURL = NSURL(string: "https://google.com") {
+            application.openURL(studentURL)
+        }
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
 
