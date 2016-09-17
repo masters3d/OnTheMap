@@ -45,36 +45,29 @@ class PostingViewController:UIViewController, ErrorReportingFromNetworkProtocol{
                 postingLocationNetwork.completionBlock = {
                     dispatch_async(dispatch_get_main_queue(), {
                         self.activityIndicator.stopAnimating()
+                        
+                        // sucesss go back to the map view
+                        self.navigationController?.popViewControllerAnimated(true)
                     })
                 }
                 postingLocationNetwork.start()
-                
             }
         }
     }
     
     func createJSONPostforLoggedInUser() -> NSData? {
-        let message = "createJSONPostforLoggedInUser has an error at line"
-        func returnBlankStringAndLog() -> String {
-            print(" message \(#line)")
-            return ""
-        }
-        func returnBlankDoubleStringAndLog() -> String {
-            print(" message \(#line)")
-            return "0.00"
-        }
         
-        let latitude = locationTosSubmit?.coordinate.latitude.description ?? returnBlankDoubleStringAndLog()
-        let longitude = locationTosSubmit?.coordinate.longitude.description ?? returnBlankDoubleStringAndLog()
+        let latitude = locationTosSubmit?.coordinate.latitude.description ?? warnLog("0.00")
+        let longitude = locationTosSubmit?.coordinate.longitude.description ?? warnLog("0.00")
         
         let postHTTPJSON =
-            ["uniqueKey":  UserDefault.getUserId()                            ?? returnBlankStringAndLog(),
-            "firstName":  UserDefault.getFullNameFromJSONDictionary()?.fist   ?? returnBlankStringAndLog(),
-            "lastName":  UserDefault.getFullNameFromJSONDictionary()?.last    ?? returnBlankStringAndLog(),
-            "mapString":  locationString                                      ?? returnBlankStringAndLog(),
-            "mediaURL":  enterLinkTextField.text                              ?? returnBlankStringAndLog(),
-            "latitude":  Double(latitude) ?? 0.00,
-            "longitude":  Double(longitude) ?? 0.00 ]
+            ["uniqueKey":  UserDefault.getUserId()                            ?? warnLog(""),
+            "firstName":  UserDefault.getFullNameFromJSONDictionary()?.fist   ?? warnLog(""),
+            "lastName":  UserDefault.getFullNameFromJSONDictionary()?.last    ?? warnLog(""),
+            "mapString":  locationString                                      ?? warnLog(""),
+            "mediaURL":  enterLinkTextField.text                              ?? warnLog(""),
+            "latitude":  Double(latitude) ?? warnLog(0.00),
+            "longitude":  Double(longitude) ?? warnLog(0.00) ]
 
 
         return try? NSJSONSerialization.dataWithJSONObject(postHTTPJSON, options: NSJSONWritingOptions())
@@ -94,7 +87,7 @@ class PostingViewController:UIViewController, ErrorReportingFromNetworkProtocol{
         let geocoder = CLGeocoder()
         
         
-        let inputLocation = enterLocationTextField.text ?? ""
+        let inputLocation = enterLocationTextField.text ?? warnLog("")
         
         geocoder.geocodeAddressString(inputLocation) { (placemarkArray, error) in
         

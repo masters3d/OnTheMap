@@ -9,10 +9,6 @@
 import Foundation
 import MapKit
 
-private func log(input:Any) {
-       print("UserLocation json parsing error at line: \(#line)"); print(input);
-    }
-
 private func fixURL(urlString: String) -> String {
         return urlString.hasPrefix("https://") || urlString.hasPrefix("http://") ?
              urlString : ("http://" + urlString )
@@ -46,16 +42,16 @@ struct UserLocation {
     
     init?(_ input: NSDictionary) {
         // we are seperating each guard so we can find out which one fails
-        guard let createdAt 	= input["createdAt"] as? String else { log(input); return nil }
-        guard let firstName 	= input["firstName"] as? String	else { log(input); return nil }
-        guard let lastName		= input["lastName"] as? String	else { log(input); return nil }
-        guard let latitude		= input["latitude"] as? Double  else { log(input); return nil }
-        guard let longitude		= input["longitude"] as? Double else { log(input); return nil }
-        guard let mapString		= input["mapString"] as? String else { log(input); return nil }
-        guard let mediaURL		= input["mediaURL"] as? String 	else { log(input); return nil }
-        guard let objectId		= input["objectId"] as? String 	else { log(input); return nil }
-        guard let uniqueKey		= input["uniqueKey"] as? String else { log(input); return nil }
-        guard let updatedAt		= input["updatedAt"] as? String else { log(input); return nil }
+        guard let createdAt 	= input["createdAt"] as? String else { warnLog(input); return nil }
+        guard let firstName 	= input["firstName"] as? String	else { warnLog(input); return nil }
+        guard let lastName		= input["lastName"] as? String	else { warnLog(input); return nil }
+        guard let latitude		= input["latitude"] as? Double  else { warnLog(input); return nil }
+        guard let longitude		= input["longitude"] as? Double else { warnLog(input); return nil }
+        guard let mapString		= input["mapString"] as? String else { warnLog(input); return nil }
+        guard let mediaURL		= input["mediaURL"] as? String 	else { warnLog(input); return nil }
+        guard let objectId		= input["objectId"] as? String 	else { warnLog(input); return nil }
+        guard let uniqueKey		= input["uniqueKey"] as? String else { warnLog(input); return nil }
+        guard let updatedAt		= input["updatedAt"] as? String else { warnLog(input); return nil }
         
         self.createdAt = createdAt
         self.firstName = firstName

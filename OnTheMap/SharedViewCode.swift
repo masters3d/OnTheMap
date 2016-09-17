@@ -8,6 +8,17 @@
 
 import UIKit
 
+// Logging Free function
+
+func warnLog() {
+    print("Warning line: \(#line) file: \(#file) ")
+}
+
+func warnLog<T>(input:T) -> T {
+    print("Warning line: \(#line) file: \(#file) ")
+    return input
+}
+
 extension UIViewController {
     
     func logoutPerformer(block:(() -> Void)? = nil) {

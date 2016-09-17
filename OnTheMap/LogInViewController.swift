@@ -19,7 +19,7 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
     @IBOutlet weak var loginGraphic: UIButton!
     
     @IBAction func loginToUdacity(sender: UIButton) {
-        UserDefault.setCredentials(emailTextField.text ?? "", password: passwordTextField.text ?? "")
+        UserDefault.setCredentials(emailTextField.text ?? warnLog(""), password: passwordTextField.text ?? warnLog(""))
 
         self.view.endEditing(true)
         activityIndicator.startAnimating()
@@ -80,7 +80,7 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let (email, password) = UserDefault.getCredentials() ?? ("", "")
+        let (email, password) = UserDefault.getCredentials() ?? (warnLog(""), warnLog(""))
         
         emailTextField.text  = email
         passwordTextField.text = password

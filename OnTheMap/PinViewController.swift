@@ -89,7 +89,8 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
         let cell = tableView.dequeueReusableCellWithIdentifier("tableViewIdentifier", forIndexPath: indexPath)
 
         cell.imageView?.image = UIImage(named: "pin")
-        cell.textLabel?.text = "\(UserDefault.getUserLocations()[indexPath.row].fullname)"
+        let student = UserDefault.getUserLocations()[indexPath.row]
+        cell.textLabel?.text = "\(student.fullname):- \(student.mapString)"
         return cell
     }
     

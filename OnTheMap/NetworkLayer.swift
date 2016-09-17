@@ -104,7 +104,7 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
             completionHandler(.Cancel)
             finished = true
         }
-        print("return code for server: \(httpResponse.statusCode) for session: \(session.sessionDescription ?? "no description")")
+        print("return code for server: \(httpResponse.statusCode) for session: \(session.sessionDescription ?? warnLog("no description"))")
     }
     
     func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveData incomingData: NSData) {
@@ -125,7 +125,7 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
         
         //MARk:-ProcessData() and save
         // Right now we are just saving here for later retrival
-            NSUserDefaults.standardUserDefaults().setObject(data, forKey: keyString ?? "")
+            NSUserDefaults.standardUserDefaults().setObject(data, forKey: keyString ?? warnLog(""))
         
         totalTime = NSDate.timeIntervalSinceReferenceDate() - startTime! // this should always have a value
         finished = true
@@ -154,7 +154,7 @@ extension NetworkOperation {
             request?.HTTPBody = UserDefault.getHTTPBodyUdacityPayload()
             
         case .getFullName:
-            let userID = UserDefault.getUserId() ?? ""
+            let userID = UserDefault.getUserId() ?? warnLog("")
             guard let getFullNameURL = NSURL(string: APIConstants.udacityUsers + "\(userID)") else { fatalError("Malformed URL")}
             self.init(url:getFullNameURL, keyForData:typeOfConnection.rawValue)
         
@@ -169,7 +169,7 @@ extension NetworkOperation {
             self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
             request = NetworkOperation.parseRequest()
             
-            let userId = UserDefault.getUserId() ?? ""
+            let userId = UserDefault.getUserId() ?? warnLog("")
             request?.addValue("{\"uniqueKey\":\"\(userId)\"}", forHTTPHeaderField: "where")
         
         case .postLoggedInStudentLocation:
@@ -191,7 +191,7 @@ extension NetworkOperation{
     // Parse Request construction
     static func parseEscapedURL() -> NSURL {
         let parseURL = APIConstants.parseStudentLocation
-        guard let parseURLEscaped = NSURL(string: NetworkOperation.escapeForURL(parseURL ) ?? parseURL) else { fatalError("Malformed URL") }
+        guard let parseURLEscaped = NSURL(string: NetworkOperation.escapeForURL(parseURL ) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
         return parseURLEscaped
         
     }
