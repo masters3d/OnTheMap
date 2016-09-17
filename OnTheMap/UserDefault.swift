@@ -34,7 +34,7 @@ enum UserDefault {
     
     static func getLoginJSONDictionary()-> NSDictionary? {
         var jsonDict:NSDictionary?
-        if let data = defaults.dataForKey(UdacityConnectionType.login.rawValue) {
+        if let data = defaults.dataForKey(ConnectionType.login.rawValue) {
             let subData =  data.subdataWithRange(NSMakeRange(5, data.length - 5 ))
             
             do {
@@ -62,7 +62,7 @@ enum UserDefault {
         var first:String = ""
         var last:String = ""
         var nick:String = ""
-        if let data = defaults.dataForKey(UdacityConnectionType.getFullName.rawValue) {
+        if let data = defaults.dataForKey(ConnectionType.getFullName.rawValue) {
             let subData = data.subdataWithRange(NSMakeRange(5, data.length - 5))
             do {
                 let response = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as! NSDictionary
@@ -101,6 +101,11 @@ enum UserDefault {
     
     //MARK:- Parse 
     
+    static var postParsePayload:NSData? {
+        set { self.defaults.setValue(newValue, forKey: "parsePayload") }
+        get { return self.defaults.dataForKey("parsePayload")}
+    }
+    
     static func getUserLocations() -> [UserLocation] {
         var usersLocations = [UserLocation]()
         if let dict = UserDefault.getParseUserLocations(),
@@ -113,7 +118,7 @@ enum UserDefault {
     }
     
     static func getParseUserLocations() -> NSDictionary? {
-        guard let data = defaults.dataForKey(ParseConnectionType.getStudentLocationsWithLimit.rawValue) else { return nil }
+        guard let data = defaults.dataForKey(ConnectionType.getStudentLocationsWithLimit.rawValue) else { return nil }
         var jsonDict:NSDictionary?
         do {
             jsonDict  = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves) as? NSDictionary

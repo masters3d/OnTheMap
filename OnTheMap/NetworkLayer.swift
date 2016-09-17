@@ -10,7 +10,6 @@ import UIKit
 
 
 enum APIConstants {
-    static let limit = "?limit=100"
     static let udacitySession  = "https://www.udacity.com/api/session"
     static let udacityUsers = "https://www.udacity.com/api/users/"
     static let parseStudentLocation = "https://parse.udacity.com/parse/classes/StudentLocation"
@@ -69,6 +68,9 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
         let config = NSURLSessionConfiguration.defaultSessionConfiguration()
         let session = NSURLSession(configuration: config, delegate: self, delegateQueue: nil)
         
+        // session name for debugging
+        session.sessionDescription = keyString
+        
         if let request = request{
         let task = session.dataTaskWithRequest(request)
         startTime = NSDate.timeIntervalSinceReferenceDate()
@@ -81,7 +83,6 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
         self.url = url
         self.keyString = keyForData
         self.request = NSMutableURLRequest(URL: url)
-        
     }
     
     func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
@@ -92,7 +93,8 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
         switch httpResponse.statusCode{
         case 200:
             completionHandler(.Allow)
-           
+        case 201:
+            completionHandler(.Allow)
         default:
             let connectionError = NSError(domain: "Check your login information.", code: httpResponse.statusCode, userInfo: nil)
             print(connectionError.localizedDescription)
@@ -102,6 +104,7 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
             completionHandler(.Cancel)
             finished = true
         }
+        print("return code for server: \(httpResponse.statusCode) for session: \(session.sessionDescription ?? "no description")")
     }
     
     func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveData incomingData: NSData) {
@@ -129,15 +132,19 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
     }
 }
 
-//MARK: - Udacity Connection
+//MARK: - Udacity & Udacity Parse Connection
 
-enum UdacityConnectionType:String{
+enum ConnectionType:String{
     case login = "udacityLoginResponse"
     case getFullName = "getFullNameResponse"
+    case getStudentLocationsWithLimit = "ParseAPILocationsWithLimit"
+    case getLoggedInStudentLocation = "ParseLoggedInStudentLocation"
+    case postLoggedInStudentLocation = "ParsePostLoggedInStudentLocation"
+
 }
 
 extension NetworkOperation {
-    convenience init(typeOfConnection:UdacityConnectionType){
+    convenience init(typeOfConnection:ConnectionType){
         switch typeOfConnection {
         case .login:
             self.init(url:NSURL(string: APIConstants.udacitySession)!, keyForData:typeOfConnection.rawValue)
@@ -150,14 +157,29 @@ extension NetworkOperation {
             let userID = UserDefault.getUserId() ?? ""
             guard let getFullNameURL = NSURL(string: APIConstants.udacityUsers + "\(userID)") else { fatalError("Malformed URL")}
             self.init(url:getFullNameURL, keyForData:typeOfConnection.rawValue)
+        
+        //MARK: - Parse Connections
+        case .getStudentLocationsWithLimit:
+            self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
+            request = NetworkOperation.parseRequest()
+            request?.addValue("100", forHTTPHeaderField: "limit")
+            request?.addValue("-updatedAt", forHTTPHeaderField: "order")
+         
+        case .getLoggedInStudentLocation:
+            self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
+            request = NetworkOperation.parseRequest()
+            
+            let userId = UserDefault.getUserId() ?? ""
+            request?.addValue("{\"uniqueKey\":\"\(userId)\"}", forHTTPHeaderField: "where")
+        
+        case .postLoggedInStudentLocation:
+            self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
+            request = NetworkOperation.parseRequest()
+            request?.HTTPMethod = "POST"
+            request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request?.HTTPBody = UserDefault.postParsePayload
         }
     }
-}
-
-//MARK: - Parse Connections
-
-enum ParseConnectionType: String {
-    case getStudentLocationsWithLimit = "APILocationsWithLimit"
 }
 
 extension NetworkOperation{
@@ -165,28 +187,24 @@ extension NetworkOperation{
    static func escapeForURL(input: String) -> String? {
         return input.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
     }
-
-    private func escapeUserURL( userId: String) -> String {
+    
+    // Parse Request construction
+    static func parseEscapedURL() -> NSURL {
         let parseURL = APIConstants.parseStudentLocation
-        let urlString = parseURL + "?where={\"uniqueKey\":\"\(userId)\"}"
-        let escapedURLString = NetworkOperation.escapeForURL(urlString) ?? urlString
-        return escapedURLString
+        guard let parseURLEscaped = NSURL(string: NetworkOperation.escapeForURL(parseURL ) ?? parseURL) else { fatalError("Malformed URL") }
+        return parseURLEscaped
+        
+    }
+    static func parseRequest() -> NSMutableURLRequest {
+        let request =  NSMutableURLRequest(URL: parseEscapedURL())
+        request.addValue(APIConstants.parseApplicationID, forHTTPHeaderField: APIConstants.parseHeaderAppID)
+        request.addValue(APIConstants.parseRestAPIKey, forHTTPHeaderField: APIConstants.parseHeaderForREST)
+        return request
     }
     
 }
 
-extension NetworkOperation {
-    convenience init(typeOfConnection:ParseConnectionType){
-        switch typeOfConnection {
-           case .getStudentLocationsWithLimit:
-            let parseURL = APIConstants.parseStudentLocation + APIConstants.limit
-            guard let parseURLEscaped = NSURL(string: NetworkOperation.escapeForURL(parseURL ) ?? parseURL) else { fatalError("Malformed URL") }
-            self.init(url:parseURLEscaped, keyForData: typeOfConnection.rawValue)
-            request?.addValue(APIConstants.parseApplicationID, forHTTPHeaderField: APIConstants.parseHeaderAppID)
-            request?.addValue(APIConstants.parseRestAPIKey, forHTTPHeaderField: APIConstants.parseHeaderForREST)
-        }
-    }
-}
+
 
 
 

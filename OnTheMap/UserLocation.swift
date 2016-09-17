@@ -13,6 +13,11 @@ private func log(input:Any) {
        print("UserLocation json parsing error at line: \(#line)"); print(input);
     }
 
+private func fixURL(urlString: String) -> String {
+        return urlString.hasPrefix("https://") || urlString.hasPrefix("http://") ?
+             urlString : ("http://" + urlString )
+}
+
 struct UserLocation {
     let createdAt:String
     let firstName:String
@@ -38,6 +43,7 @@ struct UserLocation {
                     return annotation
                     }
     
+    
     init?(_ input: NSDictionary) {
         // we are seperating each guard so we can find out which one fails
         guard let createdAt 	= input["createdAt"] as? String else { log(input); return nil }
@@ -57,12 +63,14 @@ struct UserLocation {
         self.latitude = latitude
         self.longitude = longitude
         self.mapString = mapString
-        self.mediaURL = mediaURL
+        self.mediaURL = fixURL(mediaURL) // fix URL so it opens in the browser
         self.objectId = objectId
         self.uniqueKey = uniqueKey
         self.updatedAt = updatedAt
     }
 }
+
+
 
 // SAMPLE DICT
 //        {
@@ -83,3 +91,8 @@ struct UserLocation {
 //                annotation.title = "\($0.firstName) \($0.lastName)"
 //                annotation.subtitle = $0.mediaURL
 //                return annotation
+
+
+
+
+

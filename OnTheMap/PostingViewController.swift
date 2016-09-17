@@ -10,9 +10,10 @@ import UIKit
 import MapKit
 
 class PostingViewController:UIViewController, ErrorReportingFromNetworkProtocol{
-
+    
+    // temp storage for the Location
     var locationTosSubmit:CLLocation?
-    var urlToSubmit:NSURL?
+    var locationString:String?
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var enterLinkTextField: UITextField!
@@ -28,6 +29,56 @@ class PostingViewController:UIViewController, ErrorReportingFromNetworkProtocol{
 
     @IBOutlet weak var submitButton: UIButton!
     @IBAction func submitButton(sender: UIButton) {
+        if let link = enterLinkTextField.text{
+            if link.isEmpty {
+            self.presentErrorPopUp("Please Enter a Web Link", presentingError: &presentingAlert)
+            }
+            
+            if let payload = createJSONPostforLoggedInUser() {
+                UserDefault.postParsePayload = payload
+               
+                // Posting
+                self.activityIndicator.startAnimating()
+                let postingLocationNetwork = NetworkOperation.init(typeOfConnection: ConnectionType.postLoggedInStudentLocation)
+                postingLocationNetwork.delegate = self
+                
+                postingLocationNetwork.completionBlock = {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.activityIndicator.stopAnimating()
+                    })
+                }
+                postingLocationNetwork.start()
+                
+            }
+        }
+    }
+    
+    func createJSONPostforLoggedInUser() -> NSData? {
+        let message = "createJSONPostforLoggedInUser has an error at line"
+        func returnBlankStringAndLog() -> String {
+            print(" message \(#line)")
+            return ""
+        }
+        func returnBlankDoubleStringAndLog() -> String {
+            print(" message \(#line)")
+            return "0.00"
+        }
+        
+        let latitude = locationTosSubmit?.coordinate.latitude.description ?? returnBlankDoubleStringAndLog()
+        let longitude = locationTosSubmit?.coordinate.longitude.description ?? returnBlankDoubleStringAndLog()
+        
+        let postHTTPJSON =
+            ["uniqueKey":  UserDefault.getUserId()                            ?? returnBlankStringAndLog(),
+            "firstName":  UserDefault.getFullNameFromJSONDictionary()?.fist   ?? returnBlankStringAndLog(),
+            "lastName":  UserDefault.getFullNameFromJSONDictionary()?.last    ?? returnBlankStringAndLog(),
+            "mapString":  locationString                                      ?? returnBlankStringAndLog(),
+            "mediaURL":  enterLinkTextField.text                              ?? returnBlankStringAndLog(),
+            "latitude":  Double(latitude) ?? 0.00,
+            "longitude":  Double(longitude) ?? 0.00 ]
+
+
+        return try? NSJSONSerialization.dataWithJSONObject(postHTTPJSON, options: NSJSONWritingOptions())
+        
     }
     
     @IBOutlet weak var findOnMapButton: UIButton!
@@ -53,7 +104,7 @@ class PostingViewController:UIViewController, ErrorReportingFromNetworkProtocol{
         
         if let placemark = placemarkArray?.first,
             let location = placemark.location {
-            
+            self.locationString = inputLocation
             self.locationTosSubmit = location
             let regionCenter = CLLocationCoordinate2D(latitude: location.coordinate.latitude,
                                                     longitude: location.coordinate.longitude)

@@ -6,78 +6,100 @@
 
 import UIKit
 
-class PinViewController: UITableViewController {
+class PinViewController: UITableViewController, ErrorReportingFromNetworkProtocol {
 
     @IBAction func logout(sender: UIBarButtonItem) {
         logoutPerformer()
     }
     
     @IBAction func refreshUserLocations(sender: UIBarButtonItem) {
-    }
+        self.presentingAlert = false
+        // refreshes user locations
+        self.handleRefresh()
     
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.refreshControl = UIRefreshControl()
+        self.refreshControl?.addTarget(self, action: #selector(self.handleRefresh), forControlEvents: UIControlEvents.ValueChanged)
+        // refreshes user locations
+        getUsersLocationsFromServer()
+    }
+    
+    func handleRefresh() {
+        getUsersLocationsFromServer()
+        self.tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
-    let sampleData = ["something1", "somethng2", "something3", "Something4", "Something5"]
+    //MARK:- Network Code
+    
+    func getUsersLocationsFromServer() {
+        
+        self.refreshControl?.beginRefreshing()
+        let userLocationOperation = NetworkOperation(typeOfConnection: .getStudentLocationsWithLimit)
+        userLocationOperation.delegate = self
+        userLocationOperation.completionBlock = {
+            dispatch_async(dispatch_get_main_queue(), {
+                
+        self.refreshControl?.endRefreshing()
+            })
+        }
+        userLocationOperation.start()
+        
+    }
+    
+    func getUsersLocations() -> [UserLocation]{
+        getUsersLocationsFromServer()
+        return UserDefault.getUserLocations()
+        
+    }
     
     
-//    func getUsersLocationsFromServer() {
-//        let userLocationOperation = NetworkOperation(typeOfConnection: .getStudentLocationsWithLimit)
-//        userLocationOperation.delegate = self
-//        userLocationOperation.completionBlock = {
-//            dispatch_async(dispatch_get_main_queue(), {
-//                
-//            })
-//        }
-//        userLocationOperation.start()
-//        
-//    }
+    
+    //MARK:- Error Reporting Code
+    
+    private(set) var errorReported:ErrorType?
+    private var presentingAlert:Bool = false
+    
+    func reportErrorFromOperation(operationError: ErrorType?) {
+        if let operationError = operationError where
+            self.errorReported == nil && presentingAlert == false {
+            self.errorReported = operationError
+            let descriptionError = (operationError as NSError).localizedDescription
+            self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
+            self.refreshControl?.endRefreshing()
+
+        } else {
+            self.errorReported = nil
+        }
+    }
     
     // MARK: - Table view 
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sampleData.count
+        return UserDefault.getUserLocations().count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("tableViewIdentifier", forIndexPath: indexPath)
 
         cell.imageView?.image = UIImage(named: "pin")
-        cell.textLabel?.text = "\(sampleData[indexPath.row])"
+        cell.textLabel?.text = "\(UserDefault.getUserLocations()[indexPath.row].fullname)"
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        // if the user did not enter a full URL, do a search with the mediaURL as the search term
-//        let https = "https://"
-//        let http = "http://"
-//        let googleSearch = "https://google.com/search?q="
-//        
-//        var urlString = mapLocations.locations[indexPath.row].mediaURL
-//        if !urlString.hasPrefix(https) && !urlString.hasPrefix(http) {
-//            urlString = googleSearch.stringByAppendingString(urlString)
-//        }
+
         let application = UIApplication.sharedApplication()
-        if let studentURL = NSURL(string: "https://google.com") {
-            application.openURL(studentURL)
-        }
+        let urlString = UserDefault.getUserLocations()[indexPath.row].mediaURL
+        application.openURL(NSURL(string: urlString)!)
     }
 
+
+
 }
-
-
-
-
-
-
-
-
-
-
-

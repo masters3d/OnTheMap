@@ -25,7 +25,10 @@ class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFrom
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.delegate = self
-        addLocationsToMap(getUsersLocations())
+        
+        getUsersLocationsFromServer()
+        let locations = getUsersLocations()
+        addLocationsToMap(locations)
     }
     
     @IBAction func refreshUserLocations(sender: UIBarButtonItem) {

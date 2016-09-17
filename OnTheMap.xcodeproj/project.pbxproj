@@ -93,7 +93,7 @@
 			children = (
 				1ED098E01BE3BF8E0093EED9 /* Main.storyboard */,
 				1EAF38B31CE7AE800028FB2C /* SharedViewCode.swift */,
-				1EEB186F1D8B0A1B00FD9A06 /* Table View */,
+				1ED098DE1BE3BF8E0093EED9 /* PinViewController.swift */,
 				1ED098DC1BE3BF8E0093EED9 /* MapViewController.swift */,
 				1E0D81211BE3E8A0004ED43F /* LogInViewController.swift */,
 				1EAF38B51CE7E3620028FB2C /* PostingViewController.swift */,
@@ -160,14 +160,6 @@
 				1ED098FE1BE3BF8F0093EED9 /* Info.plist */,
 			);
 			path = OnTheMapUITests;
-			sourceTree = "<group>";
-		};
-		1EEB186F1D8B0A1B00FD9A06 /* Table View */ = {
-			isa = PBXGroup;
-			children = (
-				1ED098DE1BE3BF8E0093EED9 /* PinViewController.swift */,
-			);
-			name = "Table View";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
