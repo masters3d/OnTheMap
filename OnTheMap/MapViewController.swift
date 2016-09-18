@@ -12,64 +12,63 @@ extension MKMapView {
     }
 }
 
-
-class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFromNetworkProtocol{
+class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFromNetworkProtocol {
     @IBOutlet weak var mapView: MKMapView!
-    
+
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    
+
     @IBAction func logout(sender: UIBarButtonItem) {
-         logoutPerformer()
+        logoutPerformer()
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.delegate = self
-        
+
         getUsersLocationsFromServer()
         let locations = getUsersLocations()
         addLocationsToMap(locations)
     }
-    
+
     @IBAction func refreshUserLocations(sender: UIBarButtonItem) {
         self.presentingAlert = false
-        
+
         mapView.removeAllAnnotations()
         addLocationsToMap(getUsersLocations())
     }
-    
-    func addLocationsToMap(input:[UserLocation]) {
+
+    func addLocationsToMap(input: [UserLocation]) {
         self.mapView.addAnnotations(
-            input.flatMap{ $0.annotation }
+            input.flatMap { $0.annotation }
         )
-        
+
     }
     func getUsersLocationsFromServer() {
-    
+
         activityIndicator.startAnimating()
         let userLocationOperation = NetworkOperation(typeOfConnection: .getStudentLocationsWithLimit)
         userLocationOperation.delegate = self
         userLocationOperation.completionBlock = {
             dispatch_async(dispatch_get_main_queue(), {
-    
-            self.activityIndicator.stopAnimating()
+
+                self.activityIndicator.stopAnimating()
             })
         }
         userLocationOperation.start()
-    
-    }
-    
-    func getUsersLocations() -> [UserLocation]{
-        getUsersLocationsFromServer()
-        return UserDefault.getUserLocations()
-      
+
     }
 
-//MARK:- Error Reporting Code
-    
-    private(set) var errorReported:ErrorType?
-    private var presentingAlert:Bool = false
-    
+    func getUsersLocations() -> [UserLocation] {
+        getUsersLocationsFromServer()
+        return UserDefault.getUserLocations()
+
+    }
+
+    //MARK:- Error Reporting Code
+
+    private(set) var errorReported: ErrorType?
+    private var presentingAlert: Bool = false
+
     func reportErrorFromOperation(operationError: ErrorType?) {
         if let operationError = operationError where
             self.errorReported == nil && presentingAlert == false {
@@ -77,46 +76,43 @@ class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFrom
             let descriptionError = (operationError as NSError).localizedDescription
             self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
             self.activityIndicator.stopAnimating()
-            
+
         } else {
             self.errorReported = nil
         }
     }
 
-    
     // MARK: - MKMapViewDelegate
-    
+
     // Here we create a view with a "right callout accessory view". You might choose to look into other
     // decoration alternatives. Notice the similarity between this method and the cellForRowAtIndexPath
     // method in TableViewDataSource.
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        
+
         let reuseId = "pin"
-        
+
         var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
-        
+
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
             pinView!.canShowCallout = true
             pinView!.pinTintColor = UIColor.redColor()
             pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
-            
-        }
-        else {
+
+        } else {
             pinView!.annotation = annotation
         }
-        
+
         return pinView
     }
-    
-    
+
     // This delegate method is implemented to respond to taps. It opens the system browser
     // to the URL specified in the annotationViews subtitle property.
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control == view.rightCalloutAccessoryView {
-            
+
             if let toOpen = view.annotation?.subtitle! {
-                
+
                 let application = UIApplication.sharedApplication()
                 let urlString = toOpen
                 let urlStrinCleaned = urlString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
@@ -128,20 +124,16 @@ class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFrom
                         application.openURL(url)
                     }
                 }
-                
-                
-                
+
             }
         }
     }
-//        func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-//    
-//            if control == annotationView.rightCalloutAccessoryView {
-//                let app = UIApplication.sharedApplication()
-//                app.openURL(NSURL(string: annotationView.annotation.subtitle))
-//            }
-//        }
+    //        func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+    //
+    //            if control == annotationView.rightCalloutAccessoryView {
+    //                let app = UIApplication.sharedApplication()
+    //                app.openURL(NSURL(string: annotationView.annotation.subtitle))
+    //            }
+    //        }
 
-    
 }
-

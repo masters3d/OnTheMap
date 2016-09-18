@@ -1,4 +1,3 @@
-
 //
 //  Created by Cheyo Jimenez on 10/30/15.
 //  Copyright © 2015 Cheyo Jimenez. All rights reserved.
@@ -11,14 +10,14 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
     @IBAction func logout(sender: UIBarButtonItem) {
         logoutPerformer()
     }
-    
+
     @IBAction func refreshUserLocations(sender: UIBarButtonItem) {
         self.presentingAlert = false
         // refreshes user locations
         self.handleRefresh()
-    
+
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.refreshControl = UIRefreshControl()
@@ -26,7 +25,7 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
         // refreshes user locations
         getUsersLocationsFromServer()
     }
-    
+
     func handleRefresh() {
         getUsersLocationsFromServer()
         self.tableView.reloadData()
@@ -35,37 +34,35 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
+
     //MARK:- Network Code
-    
+
     func getUsersLocationsFromServer() {
-        
+
         self.refreshControl?.beginRefreshing()
         let userLocationOperation = NetworkOperation(typeOfConnection: .getStudentLocationsWithLimit)
         userLocationOperation.delegate = self
         userLocationOperation.completionBlock = {
             dispatch_async(dispatch_get_main_queue(), {
-                
-        self.refreshControl?.endRefreshing()
+
+                self.refreshControl?.endRefreshing()
             })
         }
         userLocationOperation.start()
-        
+
     }
-    
-    func getUsersLocations() -> [UserLocation]{
+
+    func getUsersLocations() -> [UserLocation] {
         getUsersLocationsFromServer()
         return UserDefault.getUserLocations()
-        
+
     }
-    
-    
-    
+
     //MARK:- Error Reporting Code
-    
-    private(set) var errorReported:ErrorType?
-    private var presentingAlert:Bool = false
-    
+
+    private(set) var errorReported: ErrorType?
+    private var presentingAlert: Bool = false
+
     func reportErrorFromOperation(operationError: ErrorType?) {
         if let operationError = operationError where
             self.errorReported == nil && presentingAlert == false {
@@ -78,13 +75,13 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
             self.errorReported = nil
         }
     }
-    
-    // MARK: - Table view 
-    
+
+    // MARK: - Table view
+
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return UserDefault.getUserLocations().count
     }
-    
+
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("tableViewIdentifier", forIndexPath: indexPath)
 
@@ -93,7 +90,7 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
         cell.textLabel?.text = "\(student.fullname):- \(student.mapString)"
         return cell
     }
-    
+
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 
         let application = UIApplication.sharedApplication()
@@ -107,9 +104,7 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
                 application.openURL(url)
             }
         }
-        
+
     }
-
-
 
 }

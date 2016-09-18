@@ -9,22 +9,22 @@
 import UIKit
 
 class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
-    
+
     @IBOutlet weak var emailTextField: UITextField!
-    
+
     @IBOutlet weak var passwordTextField: UITextField!
-    
+
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    
+
     @IBOutlet weak var loginGraphic: UIButton!
-    
+
     @IBAction func loginToUdacity(sender: UIButton) {
         UserDefault.setCredentials(emailTextField.text ?? warnLog(""), password: passwordTextField.text ?? warnLog(""))
 
         self.view.endEditing(true)
         activityIndicator.startAnimating()
         self.presentingAlert = false
-        
+
         let networkOpUdacityLogin       = NetworkOperation(typeOfConnection: .login )
         let networkOpGetUdacityFullName = NetworkOperation(typeOfConnection: .getFullName)
         networkOpUdacityLogin.delegate = self
@@ -38,23 +38,23 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
             })
         }
         // this should excecute the operations in order.
-       let networkQueue = NSOperationQueue()
+        let networkQueue = NSOperationQueue()
         networkQueue.addOperation(networkOpUdacityLogin)
         networkQueue.addOperation(networkOpGetUdacityFullName)
-  
+
     }
-    
+
     @IBAction func singupOnTheWeb(sender: UIButton) {
         if let udacitySignupURL = NSURL(string: Udacity.urlSignUpString) {
             UIApplication.sharedApplication().openURL(udacitySignupURL)
         }
     }
-    
-//MARK:- Error Reporting Code
-    
-     private(set) var errorReported:ErrorType?
-     var presentingAlert:Bool = false
-    
+
+    //MARK:- Error Reporting Code
+
+    private(set) var errorReported: ErrorType?
+    var presentingAlert: Bool = false
+
     func reportErrorFromOperation(operationError: ErrorType?) {
         if let operationError = operationError where
             self.errorReported == nil && presentingAlert == false {
@@ -62,67 +62,63 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
             let descriptionError = (operationError as NSError).localizedDescription
             self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
             self.activityIndicator.stopAnimating()
-            
+
         } else {
             self.errorReported = nil
         }
     }
-    
-    
+
     override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
-        if identifier == "loginUdacitySeg" && (errorReported != nil  || presentingAlert == true){
+        if identifier == "loginUdacitySeg" && (errorReported != nil  || presentingAlert == true) {
             return false
         }
         return true
     }
-//MARK:- Life Cycle
-    
+    //MARK:- Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         let (email, password) = UserDefault.getCredentials() ?? (warnLog(""), warnLog(""))
-        
+
         emailTextField.text  = email
         passwordTextField.text = password
-        
+
         // part of the text delegates
         assingDelegateToTextFields()
-        
+
         //log in if the credential are already saved
-        
-         dispatch_async(dispatch_get_main_queue(), {
-        if (!email.isEmpty && !password.isEmpty) {
-            self.performSegueWithIdentifier("loginUdacitySeg", sender: nil)
-        }
+
+        dispatch_async(dispatch_get_main_queue(), {
+            if (!email.isEmpty && !password.isEmpty) {
+                self.performSegueWithIdentifier("loginUdacitySeg", sender: nil)
+            }
         })
-        
+
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         //part of the Text delefates handeling
         subscribeToKeyboardNotifications()
     }
 
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
         //part of the Text delefates handeling
         unsubscribeFromKeyboardNotifications()
     }
 }
 
-
 // MARK: Text Field Deleagates
-extension LogInViewController{
-    
+extension LogInViewController {
+
     //Keyboard will show and hide
     override func keyboardWillShow(notification: NSNotification) {
-        if emailTextField.isFirstResponder() || passwordTextField.isFirstResponder(){
+        if emailTextField.isFirstResponder() || passwordTextField.isFirstResponder() {
             view.frame.origin.y = -self.loginGraphic.bounds.minY - 8 // sits righ underneeth loginGraphic
         }
     }
 }
-
-

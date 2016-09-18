@@ -10,36 +10,35 @@ import Foundation
 import MapKit
 
 private func fixURL(urlString: String) -> String {
-        return urlString.hasPrefix("https://") || urlString.hasPrefix("http://") ?
-             urlString : ("http://" + urlString )
+    return urlString.hasPrefix("https://") || urlString.hasPrefix("http://") ?
+        urlString : ("http://" + urlString )
 }
 
 struct UserLocation {
-    let createdAt:String
-    let firstName:String
-    let lastName:String
-    let latitude:Double
-    let longitude:Double
-    let mapString:String
-    let mediaURL:String
-    let objectId:String
-    let uniqueKey:String
-    let updatedAt:String
-    
-    var coordinate:CLLocationCoordinate2D { return CLLocationCoordinate2D(
-                                                latitude: CLLocationDegrees(latitude),
-                                                longitude: CLLocationDegrees(longitude))}
+    let createdAt: String
+    let firstName: String
+    let lastName: String
+    let latitude: Double
+    let longitude: Double
+    let mapString: String
+    let mediaURL: String
+    let objectId: String
+    let uniqueKey: String
+    let updatedAt: String
+
+    var coordinate: CLLocationCoordinate2D { return CLLocationCoordinate2D(
+        latitude: CLLocationDegrees(latitude),
+        longitude: CLLocationDegrees(longitude))}
     var fullname: String { return "\(firstName) \(lastName)" }
 
-    var annotation:MKAnnotation {
-                    let annotation = MKPointAnnotation()
-                    annotation.coordinate = coordinate
-                    annotation.title = fullname
-                    annotation.subtitle = mediaURL
-                    return annotation
-                    }
-    
-    
+    var annotation: MKAnnotation {
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = coordinate
+        annotation.title = fullname
+        annotation.subtitle = mediaURL
+        return annotation
+    }
+
     init?(_ input: NSDictionary) {
         // we are seperating each guard so we can find out which one fails
         guard let createdAt 	= input["createdAt"] as? String else { warnLog(input); return nil }
@@ -52,7 +51,7 @@ struct UserLocation {
         guard let objectId		= input["objectId"] as? String 	else { warnLog(input); return nil }
         guard let uniqueKey		= input["uniqueKey"] as? String else { warnLog(input); return nil }
         guard let updatedAt		= input["updatedAt"] as? String else { warnLog(input); return nil }
-        
+
         self.createdAt = createdAt
         self.firstName = firstName
         self.lastName = lastName
@@ -65,8 +64,6 @@ struct UserLocation {
         self.updatedAt = updatedAt
     }
 }
-
-
 
 // SAMPLE DICT
 //        {
@@ -87,8 +84,3 @@ struct UserLocation {
 //                annotation.title = "\($0.firstName) \($0.lastName)"
 //                annotation.subtitle = $0.mediaURL
 //                return annotation
-
-
-
-
-
