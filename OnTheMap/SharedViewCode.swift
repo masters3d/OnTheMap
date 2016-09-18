@@ -10,12 +10,12 @@ import UIKit
 
 // Logging Free function
 
-func warnLog() {
-    print("Warning line: \(#line) file: \(#file) ")
+func warnLog(line:Int = #line, file:String = #file) {
+    print("Warning line: \(line) file: \(file) ")
 }
 
-func warnLog<T>(input: T) -> T {
-    print("Warning line: \(#line) file: \(#file) ")
+func warnLog<T>(input: T, line:Int = #line, file:String = #file) -> T {
+    print("Warning line: \(line) file: \(file) ")
     return input
 }
 

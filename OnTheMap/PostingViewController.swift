@@ -14,6 +14,25 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
     // temp storage for the Location
     var locationTosSubmit: CLLocation?
     var locationString: String?
+    
+    
+    //MARK:- Error Reporting Code
+
+    private(set) var errorReported: ErrorType?
+    private var presentingAlert: Bool = false
+
+    func reportErrorFromOperation(operationError: ErrorType?) {
+        if let operationError = operationError where
+            self.errorReported == nil && presentingAlert == false {
+            self.errorReported = operationError
+            let descriptionError = (operationError as NSError).localizedDescription
+            self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
+            self.activityIndicator.stopAnimating()
+
+        } else {
+            self.errorReported = nil
+        }
+    }
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var enterLinkTextField: UITextField!
@@ -133,22 +152,22 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
 
     @IBOutlet weak var findOnMapButton: UIButton!
     @IBAction func findOnMapButton(sender: UIButton) {
-        enterLocationTextField.hidden = true
-        enterLinkTextField.hidden = false
-        backgroundCover.hidden = true
-        submitButton.hidden = false
-        findOnMapButton.hidden = true
-
         activityIndicator.startAnimating()
 
         let geocoder = CLGeocoder()
 
-        let inputLocation = enterLocationTextField.text ?? warnLog("")
+        guard let inputLocation = enterLocationTextField.text where !inputLocation.isEmpty
+            else {
+                self.presentErrorPopUp("Please enter a location", presentingError: &self.presentingAlert )
+                self.activityIndicator.stopAnimating()
+                return
+                }
 
         geocoder.geocodeAddressString(inputLocation) { (placemarkArray, error) in
 
             if let error = error {
                 self.reportErrorFromOperation(error)
+                self.activityIndicator.stopAnimating()
             }
 
             if let placemark = placemarkArray?.first,
@@ -165,29 +184,23 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
                 annotation.coordinate = location.coordinate
                 self.mapView.addAnnotation(annotation)
 
+                self.enterLocationTextField.hidden = true
+                self.enterLinkTextField.hidden = false
+                self.backgroundCover.hidden = true
+                self.submitButton.hidden = false
+                self.findOnMapButton.hidden = true
+                
+                self.activityIndicator.stopAnimating()
+                
+                
+            } else {
+                self.presentErrorPopUp("Please try again", presentingError: &self.presentingAlert )
                 self.activityIndicator.stopAnimating()
             }
 
         }
     }
 
-    //MARK:- Error Reporting Code
-
-    private(set) var errorReported: ErrorType?
-    private var presentingAlert: Bool = false
-
-    func reportErrorFromOperation(operationError: ErrorType?) {
-        if let operationError = operationError where
-            self.errorReported == nil && presentingAlert == false {
-            self.errorReported = operationError
-            let descriptionError = (operationError as NSError).localizedDescription
-            self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
-            self.activityIndicator.stopAnimating()
-
-        } else {
-            self.errorReported = nil
-        }
-    }
 
     //MARK:- LifeCycle
     override func viewDidLoad() {
