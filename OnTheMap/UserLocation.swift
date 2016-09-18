@@ -65,7 +65,7 @@ struct UserLocation {
     }
 }
 
-// SAMPLE DICT
+// SAMPLE SERVER RESPONSE
 //        {
 //            createdAt = "2016-09-14T18:54:07.423Z";
 //            firstName = Bryan;
@@ -78,9 +78,3 @@ struct UserLocation {
 //            uniqueKey = 4240088784;
 //            updatedAt = "2016-09-14T18:54:07.423Z";
 //        },
-
-//                let annotation = MKPointAnnotation()
-//                annotation.coordinate = coordinate
-//                annotation.title = "\($0.firstName) \($0.lastName)"
-//                annotation.subtitle = $0.mediaURL
-//                return annotation

@@ -173,7 +173,7 @@ extension NetworkOperation {
             let userId = UserDefault.getUserId() ?? warnLog("")
             self.init(url:NetworkOperation.parseEscapedForUserID(userId), keyForData: typeOfConnection.rawValue)
             request?.addParseHeaderAndAPIFields()
-            //TODO:- remove: request?.addValue("{\"uniqueKey\":\"\(userId)\"}", forHTTPHeaderField: "where")
+            //Alternative to building URL: request?.addValue("{\"uniqueKey\":\"\(userId)\"}", forHTTPHeaderField: "where")
 
         case .postLoggedInStudentLocation:
             self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
@@ -183,8 +183,6 @@ extension NetworkOperation {
             request?.HTTPBody = UserDefault.postParsePayload
 
         case .putUpdateStudentLocation:
-            //            let userId = UserDefault.getUserId() ?? warnLog("")
-            //            let mostRecentObject = UserDefault.getUserLocations().filter({$0.uniqueKey == userId }).last?.objectId ?? warnLog("")
             let mostRecentObject = UserDefault.getCurrentLoggedInUserLocations().last?.objectId ?? warnLog("")
             let url = NSURL(string: APIConstants.parseStudentLocation + "/\(mostRecentObject)" )
             self.init(url:url!, keyForData: typeOfConnection.rawValue)
@@ -192,7 +190,6 @@ extension NetworkOperation {
             request?.HTTPMethod = "PUT"
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request?.HTTPBody = UserDefault.postParsePayload
-
         }
     }
 }

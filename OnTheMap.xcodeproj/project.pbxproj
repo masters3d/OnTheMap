@@ -88,6 +88,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1E4356B51D8F153D008F6F7E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1EA59AD91CE2CA0C007DF1D0 /* UserDefault.swift */,
+				1EA59ADB1CE2E92C007DF1D0 /* NetworkLayer.swift */,
+				1EEB186B1D89DAE800FD9A06 /* UserLocation.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		1EAF38B71CE7E3930028FB2C /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -136,9 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				1EAF38B81CE817EA0028FB2C /* App Support Items */,
-				1EA59AD91CE2CA0C007DF1D0 /* UserDefault.swift */,
-				1EA59ADB1CE2E92C007DF1D0 /* NetworkLayer.swift */,
-				1EEB186B1D89DAE800FD9A06 /* UserLocation.swift */,
+				1E4356B51D8F153D008F6F7E /* Model */,
 				1EAF38B71CE7E3930028FB2C /* Views */,
 			);
 			path = OnTheMap;

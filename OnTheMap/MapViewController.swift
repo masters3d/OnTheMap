@@ -128,12 +128,5 @@ class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFrom
             }
         }
     }
-    //        func mapView(mapView: MKMapView, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-    //
-    //            if control == annotationView.rightCalloutAccessoryView {
-    //                let app = UIApplication.sharedApplication()
-    //                app.openURL(NSURL(string: annotationView.annotation.subtitle))
-    //            }
-    //        }
 
 }
