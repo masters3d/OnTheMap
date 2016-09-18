@@ -52,8 +52,8 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
     
 //MARK:- Error Reporting Code
     
-    private(set) var errorReported:ErrorType?
-    private var presentingAlert:Bool = false
+     private(set) var errorReported:ErrorType?
+     var presentingAlert:Bool = false
     
     func reportErrorFromOperation(operationError: ErrorType?) {
         if let operationError = operationError where

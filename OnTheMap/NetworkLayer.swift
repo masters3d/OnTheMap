@@ -138,9 +138,10 @@ enum ConnectionType:String{
     case login = "udacityLoginResponse"
     case getFullName = "getFullNameResponse"
     case getStudentLocationsWithLimit = "ParseAPILocationsWithLimit"
-    case getLoggedInStudentLocation = "ParseLoggedInStudentLocation"
+    case getLoggedInStudentMultipleLocations = "ParseLoggedInStudentLocation"
     case postLoggedInStudentLocation = "ParsePostLoggedInStudentLocation"
-
+    case putUpdateStudentLocation = "ParsePutUpdateStudentLocation"
+    case deleteSession = "udacityLogOutSession"  // currently using something manual in shareview code
 }
 
 extension NetworkOperation {
@@ -158,6 +159,12 @@ extension NetworkOperation {
             guard let getFullNameURL = NSURL(string: APIConstants.udacityUsers + "\(userID)") else { fatalError("Malformed URL")}
             self.init(url:getFullNameURL, keyForData:typeOfConnection.rawValue)
         
+        case .deleteSession:
+            let sessionID = UserDefault.getCurrentSessionID() ?? warnLog("")
+            self.init(url:NSURL(string: APIConstants.udacitySession)!, keyForData:typeOfConnection.rawValue)
+            request?.HTTPMethod = "DELETE"
+            request?.setValue(sessionID, forHTTPHeaderField: "X-XSRF-TOKEN")
+        
         //MARK: - Parse Connections
         case .getStudentLocationsWithLimit:
             self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
@@ -165,12 +172,11 @@ extension NetworkOperation {
             request?.addValue("100", forHTTPHeaderField: "limit")
             request?.addValue("-updatedAt", forHTTPHeaderField: "order")
          
-        case .getLoggedInStudentLocation:
-            self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
-            request = NetworkOperation.parseRequest()
-            
+        case .getLoggedInStudentMultipleLocations:
             let userId = UserDefault.getUserId() ?? warnLog("")
-            request?.addValue("{\"uniqueKey\":\"\(userId)\"}", forHTTPHeaderField: "where")
+            self.init(url:NetworkOperation.parseEscapedForUserID(userId), keyForData: typeOfConnection.rawValue)
+            request = NetworkOperation.parseRequest()
+            //TODO:- remove: request?.addValue("{\"uniqueKey\":\"\(userId)\"}", forHTTPHeaderField: "where")
         
         case .postLoggedInStudentLocation:
             self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
@@ -178,6 +184,18 @@ extension NetworkOperation {
             request?.HTTPMethod = "POST"
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request?.HTTPBody = UserDefault.postParsePayload
+        
+        case .putUpdateStudentLocation:
+//            let userId = UserDefault.getUserId() ?? warnLog("")
+//            let mostRecentObject = UserDefault.getUserLocations().filter({$0.uniqueKey == userId }).last?.objectId ?? warnLog("")
+            let mostRecentObject = UserDefault.getCurrentLoggedInUserLocations().last?.objectId ?? warnLog("")
+            let url = NSURL(string: APIConstants.parseStudentLocation + "/\(mostRecentObject)" )
+            self.init(url:url!, keyForData: typeOfConnection.rawValue)
+            request = NetworkOperation.parseRequest()
+            request?.HTTPMethod = "PUT"
+            request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request?.HTTPBody = UserDefault.postParsePayload
+            
         }
     }
 }
@@ -189,6 +207,20 @@ extension NetworkOperation{
     }
     
     // Parse Request construction
+    static func parseEscapedURLforObjectID(objectID:String) ->NSURL {
+        let parseURL = APIConstants.parseStudentLocation
+        guard let parseURLEscaped = NSURL(string: ( NetworkOperation.escapeForURL(parseURL + "/\(objectID)" )) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
+        return parseURLEscaped
+    }
+    
+    static func parseEscapedForUserID(userId:String) -> NSURL {
+            let parseURL = APIConstants.parseStudentLocation
+            let userIDwhere =  "?where={\"uniqueKey\":\"\(userId)\"}"
+
+        guard let parseURLEscaped = NSURL(string: ( NetworkOperation.escapeForURL(parseURL + userIDwhere  )) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
+        return parseURLEscaped
+    
+    }
     static func parseEscapedURL() -> NSURL {
         let parseURL = APIConstants.parseStudentLocation
         guard let parseURLEscaped = NSURL(string: NetworkOperation.escapeForURL(parseURL ) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }

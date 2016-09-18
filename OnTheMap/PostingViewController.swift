@@ -29,30 +29,74 @@ class PostingViewController:UIViewController, ErrorReportingFromNetworkProtocol{
 
     @IBOutlet weak var submitButton: UIButton!
     @IBAction func submitButton(sender: UIButton) {
-        if let link = enterLinkTextField.text{
+        guard let link = enterLinkTextField.text else { return }
             if link.isEmpty {
             self.presentErrorPopUp("Please Enter a Web Link", presentingError: &presentingAlert)
             }
             
-            if let payload = createJSONPostforLoggedInUser() {
+            guard let payload = createJSONPostforLoggedInUser() else { return }
                 UserDefault.postParsePayload = payload
-               
-                // Posting
-                self.activityIndicator.startAnimating()
-                let postingLocationNetwork = NetworkOperation.init(typeOfConnection: ConnectionType.postLoggedInStudentLocation)
-                postingLocationNetwork.delegate = self
+        
+                guard let userID = UserDefault.getUserId() else { return }
+        
+                  if  UserDefault.getUserLocations().map({$0.uniqueKey}).contains(userID) {
+                  
+                    // confirm overide and run the code
+                    confirmOveride()
+                  
+                  } else {
                 
-                postingLocationNetwork.completionBlock = {
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.activityIndicator.stopAnimating()
-                        
-                        // sucesss go back to the map view
-                        self.navigationController?.popViewControllerAnimated(true)
-                    })
-                }
-                postingLocationNetwork.start()
-            }
+                    // Post a new location
+                    postingNewLocation()
+
+                  }
+    }
+    
+    func postingNewLocation() {
+        // Posting
+        self.activityIndicator.startAnimating()
+        let postingLocationNetwork = NetworkOperation(typeOfConnection: ConnectionType.postLoggedInStudentLocation)
+        postingLocationNetwork.delegate = self
+        
+        postingLocationNetwork.completionBlock = {
+            dispatch_async(dispatch_get_main_queue(), {
+                self.activityIndicator.stopAnimating()
+                
+                // sucesss go back to the map view
+                self.navigationController?.popViewControllerAnimated(true)
+            })
         }
+        postingLocationNetwork.start()
+    }
+    
+    func putUpdatingLocation() {
+    
+        self.activityIndicator.startAnimating()
+
+        //Getting Current student location
+        let currentStudentLocations = NetworkOperation(typeOfConnection: ConnectionType.getLoggedInStudentMultipleLocations)
+        currentStudentLocations.delegate = self
+        
+    
+        // Posting PUT Updating.
+        let putUpdatingLocationNetwork = NetworkOperation(typeOfConnection: ConnectionType.putUpdateStudentLocation)
+        putUpdatingLocationNetwork.delegate = self
+        
+        putUpdatingLocationNetwork.completionBlock = {
+            dispatch_async(dispatch_get_main_queue(), {
+                self.activityIndicator.stopAnimating()
+                
+                // sucesss go back to the map view
+                self.navigationController?.popViewControllerAnimated(true)
+            })
+        }
+        
+        //chaining up Operations
+        putUpdatingLocationNetwork.addDependency(currentStudentLocations)
+        let networkQueue = NSOperationQueue()
+        networkQueue.addOperation(currentStudentLocations)
+        networkQueue.addOperation(putUpdatingLocationNetwork)
+        
     }
     
     func createJSONPostforLoggedInUser() -> NSData? {
@@ -72,6 +116,21 @@ class PostingViewController:UIViewController, ErrorReportingFromNetworkProtocol{
 
         return try? NSJSONSerialization.dataWithJSONObject(postHTTPJSON, options: NSJSONWritingOptions())
         
+    }
+    
+    func confirmOveride() {
+        let overrideLocationActionSheet = UIAlertController(title: "Confirmation Required", message: "Are you sure you want to overide Location?", preferredStyle: .Alert)
+        let confirmed = UIAlertAction(title: "Overide", style: .Destructive, handler: { Void in
+            
+            // update location Network call
+            self.putUpdatingLocation()
+        
+        })
+        
+        overrideLocationActionSheet.addAction(confirmed)
+        let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        overrideLocationActionSheet.addAction(cancel)
+        presentViewController(overrideLocationActionSheet, animated: true, completion: nil)
     }
     
     @IBOutlet weak var findOnMapButton: UIButton!

@@ -81,6 +81,40 @@ enum UserDefault {
     }
     
     
+    static func getCurrentLoggedInUserLocations() -> [UserLocation] {
+        var locations = [UserLocation]()
+        let key = ConnectionType.getLoggedInStudentMultipleLocations.rawValue
+        guard let data = defaults.dataForKey(key) else { warnLog(); return [] }
+        
+        let subData = data//.subdataWithRange(NSMakeRange(5, data.length - 5))
+        
+        guard let response = try? NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves),
+            let responseDictionary = response as? NSDictionary  else { warnLog(); return [] }
+
+         guard let results = responseDictionary["results"],
+            let resultsArray = results as? NSArray else { warnLog(); return [] }
+        
+        for each in resultsArray {
+         guard let dict = each as? NSDictionary,
+         let userLocation = UserLocation(dict) else { warnLog(); continue }
+            locations.append(userLocation)
+        }
+        
+        return locations
+    }
+    
+    
+    static func getCurrentSessionID() -> String? {
+        if let response = getLoginJSONDictionary(),
+            let session = response["session"],
+            let idObject = session["id"],
+            let id = idObject as? String {
+            return id
+        } else {
+            return nil
+        }
+    }
+    
     static func getUserId()->String?{
         if let response = getLoginJSONDictionary(),
             let account = response["account"],

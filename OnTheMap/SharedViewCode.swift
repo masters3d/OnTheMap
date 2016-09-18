@@ -19,6 +19,7 @@ func warnLog<T>(input:T) -> T {
     return input
 }
 
+
 extension UIViewController {
     
     func logoutPerformer(block:(() -> Void)? = nil) {
@@ -28,9 +29,38 @@ extension UIViewController {
             if let block = block {
                 block()
             }
-        // Deleting user Defaults Values
-            UserDefault.deleteUserSavedData()
+
+            // NETWORK CODE: Loging out Deleting
+            let request = NSMutableURLRequest(URL: NSURL(string: APIConstants.udacitySession)!)
+            request.HTTPMethod = "DELETE"
+            let sessionID = UserDefault.getCurrentSessionID() ?? warnLog("")
+            request.setValue(sessionID, forHTTPHeaderField: "X-XSRF-TOKEN")
+            let session = NSURLSession.sharedSession()
+            // session name for debugging
+            session.sessionDescription = ConnectionType.deleteSession.rawValue
+            let task = session.dataTaskWithRequest(request, completionHandler: { (data, response, error) in
+                
+                if let error = error {
+                    print(error)
+                }
+                
+                if let data = data {
+                    let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5))  /* subset response data! */
+                    print("log out successfull")
+                    print(NSString(data: newData, encoding: NSUTF8StringEncoding))
+                    // Deleting user Defaults Values
+                    UserDefault.deleteUserSavedData()
+                }
+                
+            })
+            
+            task.resume()
+            // END OF NETWORK CODE: Loging out Deleting
+
+            
         })
+        
+        
         logoutActionSheet.addAction(logoutConfirmed)
         let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
         logoutActionSheet.addAction(cancel)
