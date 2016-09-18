@@ -65,7 +65,8 @@ enum UserDefault {
         if let data = defaults.dataForKey(ConnectionType.getFullName.rawValue) {
             let subData = data.subdataWithRange(NSMakeRange(5, data.length - 5))
             do {
-                let response = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as! NSDictionary
+                guard let response = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as? NSDictionary
+                        else { return nil }
                 if let user = response["user"],
                     let lastname = user["last_name"] as? String,
                     let nickname = user["nickname"] as? String,
@@ -147,8 +148,8 @@ enum UserDefault {
             let result = arrayDict as? [NSDictionary] {
             usersLocations = result.flatMap(UserLocation.init)
         }
+        
         return usersLocations
-    
     }
     
     static func getParseUserLocations() -> NSDictionary? {

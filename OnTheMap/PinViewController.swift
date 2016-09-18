@@ -98,7 +98,16 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
 
         let application = UIApplication.sharedApplication()
         let urlString = UserDefault.getUserLocations()[indexPath.row].mediaURL
-        application.openURL(NSURL(string: urlString)!)
+        let urlStrinCleaned = urlString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        if let url = NSURL(string: urlStrinCleaned) {
+            application.openURL(url)
+        } else {
+            let google = "https://www.google.com/webhp?q=" + urlStrinCleaned
+            if let url = NSURL(string: google) {
+                application.openURL(url)
+            }
+        }
+        
     }
 
 

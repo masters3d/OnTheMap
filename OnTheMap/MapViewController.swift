@@ -114,9 +114,23 @@ class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFrom
     // to the URL specified in the annotationViews subtitle property.
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control == view.rightCalloutAccessoryView {
-            let app = UIApplication.sharedApplication()
+            
             if let toOpen = view.annotation?.subtitle! {
-                app.openURL(NSURL(string: toOpen)!)
+                
+                let application = UIApplication.sharedApplication()
+                let urlString = toOpen
+                let urlStrinCleaned = urlString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+                if let url = NSURL(string: urlStrinCleaned) {
+                    application.openURL(url)
+                } else {
+                    let google = "https://www.google.com/webhp?q=" + urlStrinCleaned
+                    if let url = NSURL(string: google) {
+                        application.openURL(url)
+                    }
+                }
+                
+                
+                
             }
         }
     }

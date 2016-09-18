@@ -168,19 +168,19 @@ extension NetworkOperation {
         //MARK: - Parse Connections
         case .getStudentLocationsWithLimit:
             self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
-            request = NetworkOperation.parseRequest()
+            request?.addParseHeaderAndAPIFields()
             request?.addValue("100", forHTTPHeaderField: "limit")
             request?.addValue("-updatedAt", forHTTPHeaderField: "order")
          
         case .getLoggedInStudentMultipleLocations:
             let userId = UserDefault.getUserId() ?? warnLog("")
             self.init(url:NetworkOperation.parseEscapedForUserID(userId), keyForData: typeOfConnection.rawValue)
-            request = NetworkOperation.parseRequest()
+            request?.addParseHeaderAndAPIFields()
             //TODO:- remove: request?.addValue("{\"uniqueKey\":\"\(userId)\"}", forHTTPHeaderField: "where")
         
         case .postLoggedInStudentLocation:
             self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
-            request = NetworkOperation.parseRequest()
+            request?.addParseHeaderAndAPIFields()
             request?.HTTPMethod = "POST"
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request?.HTTPBody = UserDefault.postParsePayload
@@ -191,12 +191,20 @@ extension NetworkOperation {
             let mostRecentObject = UserDefault.getCurrentLoggedInUserLocations().last?.objectId ?? warnLog("")
             let url = NSURL(string: APIConstants.parseStudentLocation + "/\(mostRecentObject)" )
             self.init(url:url!, keyForData: typeOfConnection.rawValue)
-            request = NetworkOperation.parseRequest()
+            request?.addParseHeaderAndAPIFields()
             request?.HTTPMethod = "PUT"
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request?.HTTPBody = UserDefault.postParsePayload
             
         }
+    }
+}
+
+extension NSMutableURLRequest {
+
+    func addParseHeaderAndAPIFields() {
+        self.addValue(APIConstants.parseApplicationID, forHTTPHeaderField: APIConstants.parseHeaderAppID)
+        self.addValue(APIConstants.parseRestAPIKey, forHTTPHeaderField: APIConstants.parseHeaderForREST)
     }
 }
 
@@ -226,12 +234,6 @@ extension NetworkOperation{
         guard let parseURLEscaped = NSURL(string: NetworkOperation.escapeForURL(parseURL ) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
         return parseURLEscaped
         
-    }
-    static func parseRequest() -> NSMutableURLRequest {
-        let request =  NSMutableURLRequest(URL: parseEscapedURL())
-        request.addValue(APIConstants.parseApplicationID, forHTTPHeaderField: APIConstants.parseHeaderAppID)
-        request.addValue(APIConstants.parseRestAPIKey, forHTTPHeaderField: APIConstants.parseHeaderForREST)
-        return request
     }
     
 }
