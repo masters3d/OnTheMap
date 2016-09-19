@@ -19,7 +19,7 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
     //MARK:- Error Reporting Code
 
     private(set) var errorReported: ErrorType?
-    private var presentingAlert: Bool = false
+    internal var presentingAlert: Bool = false
 
     func reportErrorFromOperation(operationError: ErrorType?) {
             print("presenting error:\(presentingAlert)")

@@ -64,7 +64,7 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
     //MARK:- Error Reporting Code
 
     private(set) var errorReported: ErrorType?
-    private var presentingAlert: Bool = false
+    internal var presentingAlert: Bool = false
 
     func reportErrorFromOperation(operationError: ErrorType?) {
         if let operationError = operationError where

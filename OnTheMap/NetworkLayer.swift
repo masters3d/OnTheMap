@@ -16,12 +16,12 @@ enum APIConstants {
     static let parseHeaderAppID = "X-Parse-Application-Id"
     static let parseRestAPIKey = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
     static let parseHeaderForREST = "X-Parse-REST-API-Key"
-
 }
 
-protocol ErrorReportingFromNetworkProtocol {
+protocol ErrorReportingFromNetworkProtocol: class {
     func reportErrorFromOperation(operationError: ErrorType?)
-    var errorReported: ErrorType? {get}
+    var errorReported: ErrorType? { get }
+    var presentingAlert: Bool { get set }
 }
 
 class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
@@ -201,6 +201,8 @@ extension NSMutableURLRequest {
         self.addValue(APIConstants.parseRestAPIKey, forHTTPHeaderField: APIConstants.parseHeaderForREST)
     }
 }
+
+
 
 extension NetworkOperation {
 

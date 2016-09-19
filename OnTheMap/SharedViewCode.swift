@@ -19,8 +19,11 @@ func warnLog<T>(input: T, line:Int = #line, file:String = #file) -> T {
     return input
 }
 
-extension UIViewController {
 
+
+extension ErrorReportingFromNetworkProtocol where Self : UIViewController  {
+    
+    // Log out for all views
     func logoutPerformer(block:(() -> Void)? = nil) {
         let logoutActionSheet = UIAlertController(title: "Confirmation Required", message: "Are you sure you want to logout?", preferredStyle: .Alert)
         let logoutConfirmed = UIAlertAction(title: "Logout", style: .Destructive, handler: { Void in
@@ -28,33 +31,21 @@ extension UIViewController {
             if let block = block {
                 block()
             }
-
-            // NETWORK CODE: Loging out Deleting
-            let request = NSMutableURLRequest(URL: NSURL(string: APIConstants.udacitySession)!)
-            request.HTTPMethod = "DELETE"
-            let sessionID = UserDefault.getCurrentSessionID() ?? warnLog("")
-            request.setValue(sessionID, forHTTPHeaderField: "X-XSRF-TOKEN")
-            let session = NSURLSession.sharedSession()
-            // session name for debugging
-            session.sessionDescription = ConnectionType.deleteSession.rawValue
-            let task = session.dataTaskWithRequest(request, completionHandler: { (data, response, error) in
-
-                if let error = error {
-                    print(error)
-                }
-
-                if let data = data {
-                    let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5))  /* subset response data! */
+            
+            // NETWORK CALL: Logging out Deleting
+            // we could have activityIndicator started here
+            let logoutNetworkOperation = NetworkOperation(typeOfConnection: ConnectionType.deleteSession)
+                logoutNetworkOperation.delegate = self
+                logoutNetworkOperation.completionBlock = {
+                    dispatch_async(dispatch_get_main_queue(), {
+                    // we could have activityIndicator stop here
                     print("log out successfull")
-                    print(NSString(data: newData, encoding: NSUTF8StringEncoding))
                     // Deleting user Defaults Values
                     UserDefault.deleteUserSavedData()
+                    })
                 }
-
-            })
-
-            task.resume()
-            // END OF NETWORK CODE: Loging out Deleting
+            logoutNetworkOperation.start()
+            // END OF NETWORK CALL: Logging out Deleting
 
         })
 
@@ -62,9 +53,12 @@ extension UIViewController {
         let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
         logoutActionSheet.addAction(cancel)
         presentViewController(logoutActionSheet, animated: true, completion: {
-            //TODO:- Turn off presendint error bool
+            self.presentingAlert = false
         })
     }
+}
+
+extension UIViewController {
 
     func presentErrorPopUp(description: String, inout presentingError: Bool) {
         presentingError = true
@@ -72,7 +66,7 @@ extension UIViewController {
         let tryAgain = UIAlertAction(title: "Okay", style: .Default, handler: { _ in presentingError = false})
         errorActionSheet.addAction(tryAgain)
         self.presentViewController(errorActionSheet, animated: true, completion: {
-            // code to turn after 
+            presentingError = false
           })
     }
 }
