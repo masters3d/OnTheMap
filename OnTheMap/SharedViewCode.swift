@@ -61,17 +61,19 @@ extension UIViewController {
         logoutActionSheet.addAction(logoutConfirmed)
         let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
         logoutActionSheet.addAction(cancel)
-        presentViewController(logoutActionSheet, animated: true, completion: nil)
+        presentViewController(logoutActionSheet, animated: true, completion: {
+            //TODO:- Turn off presendint error bool
+        })
     }
 
     func presentErrorPopUp(description: String, inout presentingError: Bool) {
         presentingError = true
-        let errorActionSheet = UIAlertController(title: "Error", message: description, preferredStyle: .Alert)
-        let tryAgain = UIAlertAction(title: "Try Again?", style: .Default, handler: { _ in presentingError = false})
+        let errorActionSheet = UIAlertController(title: "Error: Please Try again", message: description, preferredStyle: .Alert)
+        let tryAgain = UIAlertAction(title: "Okay", style: .Default, handler: { _ in presentingError = false})
         errorActionSheet.addAction(tryAgain)
-        let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: { _ in presentingError = false})
-        errorActionSheet.addAction(cancel)
-        self.presentViewController(errorActionSheet, animated: true, completion: { })
+        self.presentViewController(errorActionSheet, animated: true, completion: {
+            // code to turn after 
+          })
     }
 }
 

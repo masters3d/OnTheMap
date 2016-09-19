@@ -22,6 +22,7 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
     private var presentingAlert: Bool = false
 
     func reportErrorFromOperation(operationError: ErrorType?) {
+            print("presenting error:\(presentingAlert)")
         if let operationError = operationError where
             self.errorReported == nil && presentingAlert == false {
             self.errorReported = operationError
@@ -143,7 +144,9 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
         overrideLocationActionSheet.addAction(confirmed)
         let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
         overrideLocationActionSheet.addAction(cancel)
-        presentViewController(overrideLocationActionSheet, animated: true, completion: nil)
+        presentViewController(overrideLocationActionSheet, animated: true, completion: {
+            self.presentingAlert = false
+        })
     }
 
     @IBOutlet weak var findOnMapButton: UIButton!
