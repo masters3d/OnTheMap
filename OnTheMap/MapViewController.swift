@@ -13,6 +13,9 @@ extension MKMapView {
 }
 
 class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFromNetworkProtocol {
+
+    @IBAction func unwindSegue(segue: UIStoryboardSegue) { }
+
     @IBOutlet weak var mapView: MKMapView!
 
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!

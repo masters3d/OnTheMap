@@ -7,6 +7,9 @@ import UIKit
 
 class PinViewController: UITableViewController, ErrorReportingFromNetworkProtocol {
 
+    @IBAction func unwindSegue(segue: UIStoryboardSegue) { }
+
+
     @IBAction func logout(sender: UIBarButtonItem) {
         logoutPerformer()
     }

@@ -42,10 +42,6 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
     @IBOutlet weak var backgroundCover: UIView!
     @IBOutlet weak var whereAreYouStuding: UILabel!
 
-    @IBAction func cancelButton(sender: UIButton) {
-        self.navigationController?.popViewControllerAnimated(true)
-    }
-
     @IBOutlet weak var submitButton: UIButton!
     @IBAction func submitButton(sender: UIButton) {
         guard let link = enterLinkTextField.text else { return }
