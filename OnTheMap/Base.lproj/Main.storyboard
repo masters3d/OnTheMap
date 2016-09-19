@@ -320,8 +320,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MXm-OL-m6P">
-                                <rect key="frame" x="532" y="64" width="48" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MXm-OL-m6P">
+                                <rect key="frame" x="532" y="20" width="48" height="30"/>
                                 <state key="normal" title="Cancel">
                                     <color key="titleColor" red="0.28802427180000001" green="0.47611534909999997" blue="0.68278681289999998" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
@@ -329,11 +329,11 @@
                                     <segue destination="jco-4G-IYk" kind="unwind" unwindAction="unwindSegue:" id="58t-0G-Fp4"/>
                                 </connections>
                             </button>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="n4g-nH-nOq">
-                                <rect key="frame" x="0.0" y="189" width="600" height="362"/>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="n4g-nH-nOq">
+                                <rect key="frame" x="0.0" y="189" width="600" height="411"/>
                             </mapView>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y9D-Ty-a0T" userLabel="backgroundCover">
-                                <rect key="frame" x="0.0" y="189" width="600" height="362"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y9D-Ty-a0T" userLabel="backgroundCover">
+                                <rect key="frame" x="0.0" y="189" width="600" height="411"/>
                                 <subviews>
                                     <textField clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Location here" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="o1L-Bv-aWV" userLabel="EnterLocation">
                                         <rect key="frame" x="8" y="0.0" width="584" height="30"/>
@@ -351,8 +351,8 @@
                                     <constraint firstAttribute="trailing" secondItem="o1L-Bv-aWV" secondAttribute="trailing" constant="8" id="p35-XU-OW4"/>
                                 </constraints>
                             </view>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OJo-A3-hfP" userLabel="Submit Button">
-                                <rect key="frame" x="265" y="473" width="71" height="30"/>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OJo-A3-hfP" userLabel="Submit Button">
+                                <rect key="frame" x="265" y="522" width="71" height="30"/>
                                 <color key="backgroundColor" red="0.28802427180000001" green="0.47611534909999997" blue="0.68278681289999998" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="71" id="zOA-RP-hYR"/>
@@ -364,8 +364,8 @@
                                     <action selector="submitButton:" destination="W60-Wq-204" eventType="touchUpInside" id="1hu-X2-GYF"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dFJ-DK-X8T">
-                                <rect key="frame" x="20" y="429" width="560" height="36"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dFJ-DK-X8T">
+                                <rect key="frame" x="20" y="478" width="560" height="36"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="36" id="Cv5-wO-MNe"/>
@@ -377,8 +377,8 @@
                                     <action selector="findOnMapButton:" destination="W60-Wq-204" eventType="touchUpInside" id="s94-Es-YDW"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Where are you studying today?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="raS-Sr-HzD">
-                                <rect key="frame" x="241" y="96" width="118" height="53"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Where are you studying today?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="raS-Sr-HzD">
+                                <rect key="frame" x="241" y="52" width="118" height="97"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="118" id="Oda-K8-HXh"/>
                                 </constraints>
@@ -394,8 +394,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="URL" keyboardAppearance="light"/>
                             </textField>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="ZIb-38-b0y">
-                                <rect key="frame" x="290" y="360" width="20" height="20"/>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="ZIb-38-b0y">
+                                <rect key="frame" x="290" y="384.5" width="20" height="20"/>
                             </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
