@@ -18,21 +18,15 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
     
     //MARK:- Error Reporting Code
 
-    private(set) var errorReported: ErrorType?
-    internal var presentingAlert: Bool = false
-
-    func reportErrorFromOperation(operationError: ErrorType?) {
-            print("presenting error:\(presentingAlert)")
-        if let operationError = operationError where
-            self.errorReported == nil && presentingAlert == false {
-            self.errorReported = operationError
-            let descriptionError = (operationError as NSError).localizedDescription
-            self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
-            self.activityIndicator.stopAnimating()
-
-        } else {
-            self.errorReported = nil
-        }
+    var errorReported: ErrorType?
+    var presentingAlert: Bool = false
+    
+    func activityIndicatorStart() {
+        self.activityIndicator.startAnimating()
+    }
+    
+    func activityIndicatorStop() {
+        self.activityIndicator.stopAnimating()
     }
 
     @IBOutlet weak var mapView: MKMapView!

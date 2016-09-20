@@ -20,8 +20,12 @@ enum APIConstants {
 
 protocol ErrorReportingFromNetworkProtocol: class {
     func reportErrorFromOperation(operationError: ErrorType?)
-    var errorReported: ErrorType? { get }
+    var errorReported: ErrorType? { get set }
     var presentingAlert: Bool { get set }
+    
+    //activityIndicator.startAnimating()
+    func activityIndicatorStart()
+    func activityIndicatorStop()
 }
 
 class NetworkOperation: NSOperation, NSURLSessionDataDelegate {

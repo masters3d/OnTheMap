@@ -52,20 +52,15 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
 
     //MARK:- Error Reporting Code
 
-    private(set) var errorReported: ErrorType?
+    var errorReported: ErrorType?
     var presentingAlert: Bool = false
-
-    func reportErrorFromOperation(operationError: ErrorType?) {
-        if let operationError = operationError where
-            self.errorReported == nil && presentingAlert == false {
-            self.errorReported = operationError
-            let descriptionError = (operationError as NSError).localizedDescription
-            self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
-            self.activityIndicator.stopAnimating()
-
-        } else {
-            self.errorReported = nil
-        }
+    
+    func activityIndicatorStart() {
+        self.activityIndicator.startAnimating()
+    }
+    
+    func activityIndicatorStop() {
+        self.activityIndicator.stopAnimating()
     }
 
     override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {

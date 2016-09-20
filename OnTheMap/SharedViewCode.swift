@@ -22,6 +22,23 @@ func warnLog<T>(input: T, line:Int = #line, file:String = #file) -> T {
 
 
 extension ErrorReportingFromNetworkProtocol where Self : UIViewController  {
+
+
+    // Error reporting
+    func reportErrorFromOperation(operationError: ErrorType?) {
+            print("presenting error:\(presentingAlert)")
+        if let operationError = operationError where
+            self.errorReported == nil && presentingAlert == false {
+            self.errorReported = operationError
+            let descriptionError = (operationError as NSError).localizedDescription
+            self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
+            self.activityIndicatorStop()
+
+        } else {
+            self.errorReported = nil
+        }
+    }
+
     
     // Log out for all views
     func logoutPerformer(block:(() -> Void)? = nil) {
@@ -33,12 +50,12 @@ extension ErrorReportingFromNetworkProtocol where Self : UIViewController  {
             }
             
             // NETWORK CALL: Logging out Deleting
-            // we could have activityIndicator started here
+            self.activityIndicatorStart()
             let logoutNetworkOperation = NetworkOperation(typeOfConnection: ConnectionType.deleteSession)
                 logoutNetworkOperation.delegate = self
                 logoutNetworkOperation.completionBlock = {
                     dispatch_async(dispatch_get_main_queue(), {
-                    // we could have activityIndicator stop here
+                    self.activityIndicatorStop()
                     print("log out successfull")
                     // Deleting user Defaults Values
                     UserDefault.deleteUserSavedData()
