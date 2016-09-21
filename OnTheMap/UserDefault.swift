@@ -13,32 +13,32 @@ enum Udacity {
 }
 
 enum UserDefault {
-    private static let defaults = NSUserDefaults.standardUserDefaults()
+    fileprivate static let defaults = UserDefaults.standard
 
-    private static let userEmailKey: String = "udacityUserEmail"
-    private static let userPasswordKey: String = "udacityUserPassword"
+    fileprivate static let userEmailKey: String = "udacityUserEmail"
+    fileprivate static let userPasswordKey: String = "udacityUserPassword"
 
     static func getCredentials() -> (email: String, password: String)? {
-        if let udacityUserEmail = defaults.stringForKey(userEmailKey),
-            let udacityUserPassword = defaults.stringForKey(userPasswordKey) {
+        if let udacityUserEmail = defaults.string(forKey: userEmailKey),
+            let udacityUserPassword = defaults.string(forKey: userPasswordKey) {
             return (udacityUserEmail, udacityUserPassword)
         } else {
             return nil
         }
     }
 
-    static func setCredentials(email: String, password: String) {
-        defaults.setObject(email, forKey: userEmailKey)
-        defaults.setObject(password, forKey: userPasswordKey)
+    static func setCredentials(_ email: String, password: String) {
+        defaults.set(email, forKey: userEmailKey)
+        defaults.set(password, forKey: userPasswordKey)
     }
 
     static func getLoginJSONDictionary() -> NSDictionary? {
         var jsonDict: NSDictionary?
-        if let data = defaults.dataForKey(ConnectionType.login.rawValue) {
-            let subData =  data.subdataWithRange(NSMakeRange(5, data.length - 5 ))
+        if let data = defaults.data(forKey: ConnectionType.login.rawValue) {
+            let subData =  data.subdata(in: 5..<data.count )
 
             do {
-                jsonDict  = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as? NSDictionary
+                jsonDict  = try JSONSerialization.jsonObject(with: subData, options: .mutableLeaves) as? NSDictionary
 
             } catch {
                 print("error parsing the udacity connection \(error)")
@@ -47,13 +47,13 @@ enum UserDefault {
         return jsonDict
     }
 
-    static func getHTTPBodyUdacityPayload() -> NSData? {
+    static func getHTTPBodyUdacityPayload() -> Data? {
         guard let (email, password) = UserDefault.getCredentials() else {
             return nil
         }
 
         let object  = ["udacity" : ["username" : email, "password" : password]]
-        return try? NSJSONSerialization.dataWithJSONObject(object, options: [])
+        return try? JSONSerialization.data(withJSONObject: object, options: [])
 
     }
 
@@ -61,12 +61,12 @@ enum UserDefault {
         var first: String = ""
         var last: String = ""
         var nick: String = ""
-        if let data = defaults.dataForKey(ConnectionType.getFullName.rawValue) {
-            let subData = data.subdataWithRange(NSMakeRange(5, data.length - 5))
+        if let data = defaults.data(forKey: ConnectionType.getFullName.rawValue) {
+            let subData = data.subdata(in: 5..<data.count)
             do {
-                guard let response = try NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves) as? NSDictionary
+                guard let response = try JSONSerialization.jsonObject(with: subData, options: .mutableLeaves) as? NSDictionary
                     else { return nil }
-                if let user = response["user"],
+                if let user = response["user"] as? [String:Any],
                     let lastname = user["last_name"] as? String,
                     let nickname = user["nickname"] as? String,
                     let firstname = user["first_name"] as? String {
@@ -83,11 +83,11 @@ enum UserDefault {
     static func getCurrentLoggedInUserLocations() -> [UserLocation] {
         var locations = [UserLocation]()
         let key = ConnectionType.getLoggedInStudentMultipleLocations.rawValue
-        guard let data = defaults.dataForKey(key) else { warnLog(); return [] }
+        guard let data = defaults.data(forKey: key) else { warnLog(); return [] }
 
         let subData = data//.subdataWithRange(NSMakeRange(5, data.length - 5))
 
-        guard let response = try? NSJSONSerialization.JSONObjectWithData(subData, options: .MutableLeaves),
+        guard let response = try? JSONSerialization.jsonObject(with: subData, options: .mutableLeaves),
             let responseDictionary = response as? NSDictionary  else { warnLog(); return [] }
 
         guard let results = responseDictionary["results"],
@@ -104,7 +104,7 @@ enum UserDefault {
 
     static func getCurrentSessionID() -> String? {
         if let response = getLoginJSONDictionary(),
-            let session = response["session"],
+            let session = response["session"] as? [String:Any],
             let idObject = session["id"],
             let id = idObject as? String {
             return id
@@ -115,7 +115,7 @@ enum UserDefault {
 
     static func getUserId() -> String? {
         if let response = getLoginJSONDictionary(),
-            let account = response["account"],
+            let account = response["account"] as? [String:Any],
             let id = account["key"],
             let accountID = id as? String {
             return accountID
@@ -125,17 +125,14 @@ enum UserDefault {
     }
 
     static func deleteUserSavedData() {
-        NSUserDefaults.resetStandardUserDefaults()
-
-        print()
-
+        UserDefaults.resetStandardUserDefaults()
     }
 
     //MARK:- Parse
 
-    static var postParsePayload: NSData? {
+    static var postParsePayload: Data? {
         set { self.defaults.setValue(newValue, forKey: "parsePayload") }
-        get { return self.defaults.dataForKey("parsePayload")}
+        get { return self.defaults.data(forKey: "parsePayload")}
     }
 
     static func getUserLocations() -> [UserLocation] {
@@ -150,10 +147,10 @@ enum UserDefault {
     }
 
     static func getParseUserLocations() -> NSDictionary? {
-        guard let data = defaults.dataForKey(ConnectionType.getStudentLocationsWithLimit.rawValue) else { return nil }
+        guard let data = defaults.data(forKey: ConnectionType.getStudentLocationsWithLimit.rawValue) else { return nil }
         var jsonDict: NSDictionary?
         do {
-            jsonDict  = try NSJSONSerialization.JSONObjectWithData(data, options: .MutableLeaves) as? NSDictionary
+            jsonDict  = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves) as? NSDictionary
 
         } catch {
             print("error parsing the Parse connection \(error)")

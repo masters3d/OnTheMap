@@ -18,7 +18,7 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
     
     //MARK:- Error Reporting Code
 
-    var errorReported: ErrorType?
+    var errorReported: Error?
     var presentingAlert: Bool = false
     
     func activityIndicatorStart() {
@@ -38,10 +38,10 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
     @IBOutlet weak var whereAreYouStuding: UILabel!
 
     @IBOutlet weak var submitButton: UIButton!
-    @IBAction func submitButton(sender: UIButton) {
+    @IBAction func submitButton(_ sender: UIButton) {
         guard let link = enterLinkTextField.text else { return }
         if link.isEmpty {
-            self.presentErrorPopUp("Please Enter a Web Link", presentingError: &presentingAlert)
+            self.presentErrorPopUp("Please Enter a Web Link")
         }
 
         guard let payload = createJSONPostforLoggedInUser() else { return }
@@ -69,11 +69,11 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
         postingLocationNetwork.delegate = self
 
         postingLocationNetwork.completionBlock = {
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.activityIndicator.stopAnimating()
 
                 // sucesss go back to the map view
-                self.navigationController?.popViewControllerAnimated(true)
+                self.dismiss(animated: true, completion: nil)
             })
         }
         postingLocationNetwork.start()
@@ -92,28 +92,28 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
         putUpdatingLocationNetwork.delegate = self
 
         putUpdatingLocationNetwork.completionBlock = {
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.activityIndicator.stopAnimating()
 
                 // sucesss go back to the map view
-                self.navigationController?.popViewControllerAnimated(true)
+                self.dismiss(animated: true, completion: nil)
             })
         }
 
         //chaining up Operations
         putUpdatingLocationNetwork.addDependency(currentStudentLocations)
-        let networkQueue = NSOperationQueue()
+        let networkQueue = OperationQueue()
         networkQueue.addOperation(currentStudentLocations)
         networkQueue.addOperation(putUpdatingLocationNetwork)
 
     }
 
-    func createJSONPostforLoggedInUser() -> NSData? {
+    func createJSONPostforLoggedInUser() -> Data? {
 
         let latitude = locationTosSubmit?.coordinate.latitude.description ?? warnLog("0.00")
         let longitude = locationTosSubmit?.coordinate.longitude.description ?? warnLog("0.00")
 
-        let postHTTPJSON =
+        let postHTTPJSON: [String : Any] =
             ["uniqueKey":  UserDefault.getUserId()                            ?? warnLog(""),
              "firstName":  UserDefault.getFullNameFromJSONDictionary()?.fist   ?? warnLog(""),
              "lastName":  UserDefault.getFullNameFromJSONDictionary()?.last    ?? warnLog(""),
@@ -122,13 +122,13 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
              "latitude":  Double(latitude) ?? warnLog(0.00),
              "longitude":  Double(longitude) ?? warnLog(0.00) ]
 
-        return try? NSJSONSerialization.dataWithJSONObject(postHTTPJSON, options: NSJSONWritingOptions())
+        return try? JSONSerialization.data(withJSONObject: postHTTPJSON, options: JSONSerialization.WritingOptions())
 
     }
 
     func confirmOveride() {
-        let overrideLocationActionSheet = UIAlertController(title: "Confirmation Required", message: "Are you sure you want to overide Location?", preferredStyle: .Alert)
-        let confirmed = UIAlertAction(title: "Overide", style: .Destructive, handler: { Void in
+        let overrideLocationActionSheet = UIAlertController(title: "Confirmation Required", message: "Are you sure you want to overide Location?", preferredStyle: .alert)
+        let confirmed = UIAlertAction(title: "Overide", style: .destructive, handler: { Void in
 
             // update location Network call
             self.putUpdatingLocation()
@@ -136,22 +136,22 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
         })
 
         overrideLocationActionSheet.addAction(confirmed)
-        let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         overrideLocationActionSheet.addAction(cancel)
-        presentViewController(overrideLocationActionSheet, animated: true, completion: {
+        present(overrideLocationActionSheet, animated: true, completion: {
             self.presentingAlert = false
         })
     }
 
     @IBOutlet weak var findOnMapButton: UIButton!
-    @IBAction func findOnMapButton(sender: UIButton) {
+    @IBAction func findOnMapButton(_ sender: UIButton) {
         activityIndicator.startAnimating()
 
         let geocoder = CLGeocoder()
 
-        guard let inputLocation = enterLocationTextField.text where !inputLocation.isEmpty
+        guard let inputLocation = enterLocationTextField.text , !inputLocation.isEmpty
             else {
-                self.presentErrorPopUp("Please enter a location", presentingError: &self.presentingAlert )
+                self.presentErrorPopUp("Please enter a location")
                 self.activityIndicator.stopAnimating()
                 return
                 }
@@ -177,17 +177,17 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
                 annotation.coordinate = location.coordinate
                 self.mapView.addAnnotation(annotation)
 
-                self.enterLocationTextField.hidden = true
-                self.enterLinkTextField.hidden = false
-                self.backgroundCover.hidden = true
-                self.submitButton.hidden = false
-                self.findOnMapButton.hidden = true
+                self.enterLocationTextField.isHidden = true
+                self.enterLinkTextField.isHidden = false
+                self.backgroundCover.isHidden = true
+                self.submitButton.isHidden = false
+                self.findOnMapButton.isHidden = true
                 
                 self.activityIndicator.stopAnimating()
                 
                 
             } else {
-                self.presentErrorPopUp("Please try again", presentingError: &self.presentingAlert )
+                self.presentErrorPopUp("Please try again")
                 self.activityIndicator.stopAnimating()
             }
 
@@ -198,26 +198,26 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
     //MARK:- LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationController?.navigationBarHidden = true
-        tabBarController?.tabBar.hidden = true
+        self.navigationController?.isNavigationBarHidden = true
+        tabBarController?.tabBar.isHidden = true
 
         // hide the web link
-        self.enterLinkTextField.hidden = true
+        self.enterLinkTextField.isHidden = true
 
         // automaticly sets up the keyboard delegates
         assingDelegateToTextFields()
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.navigationBarHidden = false
-        tabBarController?.tabBar.hidden = false
+        self.navigationController?.isNavigationBarHidden = false
+        tabBarController?.tabBar.isHidden = false
 
         // Part of the text delates methods
         unsubscribeFromKeyboardNotifications()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         // Part of the text delates methods

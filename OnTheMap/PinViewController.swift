@@ -7,14 +7,14 @@ import UIKit
 
 class PinViewController: UITableViewController, ErrorReportingFromNetworkProtocol {
 
-    @IBAction func unwindSegue(segue: UIStoryboardSegue) { }
+    @IBAction func unwindSegue(_ segue: UIStoryboardSegue) { }
 
 
-    @IBAction func logout(sender: UIBarButtonItem) {
+    @IBAction func logout(_ sender: UIBarButtonItem) {
         logoutPerformer()
     }
 
-    @IBAction func refreshUserLocations(sender: UIBarButtonItem) {
+    @IBAction func refreshUserLocations(_ sender: UIBarButtonItem) {
         self.presentingAlert = false
         // refreshes user locations
         self.handleRefresh()
@@ -24,7 +24,7 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
     override func viewDidLoad() {
         super.viewDidLoad()
         self.refreshControl = UIRefreshControl()
-        self.refreshControl?.addTarget(self, action: #selector(self.handleRefresh), forControlEvents: UIControlEvents.ValueChanged)
+        self.refreshControl?.addTarget(self, action: #selector(self.handleRefresh), for: UIControlEvents.valueChanged)
         // refreshes user locations
         getUsersLocationsFromServer()
     }
@@ -46,7 +46,7 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
         let userLocationOperation = NetworkOperation(typeOfConnection: .getStudentLocationsWithLimit)
         userLocationOperation.delegate = self
         userLocationOperation.completionBlock = {
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
 
                 self.refreshControl?.endRefreshing()
             })
@@ -63,7 +63,7 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
 
     //MARK:- Error Reporting Code
 
-    var errorReported: ErrorType?
+    var errorReported: Error?
     var presentingAlert: Bool = false
     
     func activityIndicatorStart() {
@@ -76,29 +76,30 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
 
     // MARK: - Table view
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return UserDefault.getUserLocations().count
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("tableViewIdentifier", forIndexPath: indexPath)
-
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewIdentifier", for: indexPath)
+        //TODO:- NSIndexPath could probably be just IndexPath
         cell.imageView?.image = UIImage(named: "pin")
-        let student = UserDefault.getUserLocations()[indexPath.row]
+        let student = UserDefault.getUserLocations()[(indexPath as NSIndexPath).row]
         cell.textLabel?.text = "\(student.fullname):- \(student.mapString)"
         return cell
     }
 
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        let application = UIApplication.sharedApplication()
-        let urlString = UserDefault.getUserLocations()[indexPath.row].mediaURL
-        let urlStrinCleaned = urlString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
-        if let url = NSURL(string: urlStrinCleaned) {
+        let application = UIApplication.shared
+        //TODO:- NSIndexPath could probably be just IndexPath
+        let urlString = UserDefault.getUserLocations()[(indexPath as NSIndexPath).row].mediaURL
+        let urlStrinCleaned = urlString.trimmingCharacters(in: CharacterSet.whitespaces)
+        if let url = URL(string: urlStrinCleaned) {
             application.openURL(url)
         } else {
             let google = "https://www.google.com/webhp?q=" + urlStrinCleaned
-            if let url = NSURL(string: google) {
+            if let url = URL(string: google) {
                 application.openURL(url)
             }
         }

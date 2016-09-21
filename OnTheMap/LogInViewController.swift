@@ -18,7 +18,7 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
 
     @IBOutlet weak var loginGraphic: UIButton!
 
-    @IBAction func loginToUdacity(sender: UIButton) {
+    @IBAction func loginToUdacity(_ sender: UIButton) {
         UserDefault.setCredentials(emailTextField.text ?? warnLog(""), password: passwordTextField.text ?? warnLog(""))
 
         self.view.endEditing(true)
@@ -31,28 +31,28 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
         networkOpGetUdacityFullName.delegate = self
         networkOpGetUdacityFullName.addDependency(networkOpUdacityLogin)
         networkOpGetUdacityFullName.completionBlock = {
-            dispatch_async(dispatch_get_main_queue(), {
-                if self.shouldPerformSegueWithIdentifier("loginUdacitySeg", sender: nil) {
+            DispatchQueue.main.async(execute: {
+                if self.shouldPerformSegue(withIdentifier: "loginUdacitySeg", sender: nil) {
                     self.activityIndicator.stopAnimating()
-                    self.performSegueWithIdentifier("loginUdacitySeg", sender: nil) }
+                    self.performSegue(withIdentifier: "loginUdacitySeg", sender: nil) }
             })
         }
         // this should excecute the operations in order.
-        let networkQueue = NSOperationQueue()
+        let networkQueue = OperationQueue()
         networkQueue.addOperation(networkOpUdacityLogin)
         networkQueue.addOperation(networkOpGetUdacityFullName)
 
     }
 
-    @IBAction func singupOnTheWeb(sender: UIButton) {
-        if let udacitySignupURL = NSURL(string: Udacity.urlSignUpString) {
-            UIApplication.sharedApplication().openURL(udacitySignupURL)
+    @IBAction func singupOnTheWeb(_ sender: UIButton) {
+        if let udacitySignupURL = URL(string: Udacity.urlSignUpString) {
+            UIApplication.shared.openURL(udacitySignupURL)
         }
     }
 
     //MARK:- Error Reporting Code
 
-    var errorReported: ErrorType?
+    var errorReported: Error?
     var presentingAlert: Bool = false
     
     func activityIndicatorStart() {
@@ -63,7 +63,7 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
         self.activityIndicator.stopAnimating()
     }
 
-    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject?) -> Bool {
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
         if identifier == "loginUdacitySeg" && (errorReported != nil  || presentingAlert == true) {
             return false
         }
@@ -84,22 +84,22 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
 
         //log in if the credential are already saved
 
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             if (!email.isEmpty && !password.isEmpty) {
-                self.performSegueWithIdentifier("loginUdacitySeg", sender: nil)
+                self.performSegue(withIdentifier: "loginUdacitySeg", sender: nil)
             }
         })
 
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         //part of the Text delefates handeling
         subscribeToKeyboardNotifications()
     }
 
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         //part of the Text delefates handeling
@@ -111,8 +111,8 @@ class LogInViewController: UIViewController, ErrorReportingFromNetworkProtocol {
 extension LogInViewController {
 
     //Keyboard will show and hide
-    override func keyboardWillShow(notification: NSNotification) {
-        if emailTextField.isFirstResponder() || passwordTextField.isFirstResponder() {
+    override func keyboardWillShow(_ notification: Notification) {
+        if emailTextField.isFirstResponder || passwordTextField.isFirstResponder {
             view.frame.origin.y = -self.loginGraphic.bounds.minY - 8 // sits righ underneeth loginGraphic
         }
     }

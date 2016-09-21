@@ -10,11 +10,11 @@ import UIKit
 
 // Logging Free function
 
-func warnLog(line:Int = #line, file:String = #file) {
+func warnLog(_ line:Int = #line, file:String = #file) {
     print("Warning line: \(line) file: \(file) ")
 }
 
-func warnLog<T>(input: T, line:Int = #line, file:String = #file) -> T {
+@discardableResult func warnLog<T>(_ input: T, line:Int = #line, file:String = #file) -> T {
     print("Warning line: \(line) file: \(file) ")
     return input
 }
@@ -23,15 +23,26 @@ func warnLog<T>(input: T, line:Int = #line, file:String = #file) -> T {
 
 extension ErrorReportingFromNetworkProtocol where Self : UIViewController  {
 
+ func presentErrorPopUp(_ description: String) {
+        self.presentingAlert = true
+        let errorActionSheet = UIAlertController(title: "Error: Please Try again", message: description, preferredStyle: .alert)
+        let tryAgain = UIAlertAction(title: "Okay", style: .default, handler: nil) 
+        errorActionSheet.addAction(tryAgain)
+        self.present(errorActionSheet, animated: true, completion: {
+            self.presentingAlert = false
+          })
+    }
+
+
 
     // Error reporting
-    func reportErrorFromOperation(operationError: ErrorType?) {
+    func reportErrorFromOperation(_ operationError: Error?) {
             print("presenting error:\(presentingAlert)")
-        if let operationError = operationError where
+        if let operationError = operationError ,
             self.errorReported == nil && presentingAlert == false {
             self.errorReported = operationError
             let descriptionError = (operationError as NSError).localizedDescription
-            self.presentErrorPopUp(descriptionError, presentingError: &presentingAlert)
+            self.presentErrorPopUp(descriptionError)
             self.activityIndicatorStop()
 
         } else {
@@ -41,10 +52,10 @@ extension ErrorReportingFromNetworkProtocol where Self : UIViewController  {
 
     
     // Log out for all views
-    func logoutPerformer(block:(() -> Void)? = nil) {
-        let logoutActionSheet = UIAlertController(title: "Confirmation Required", message: "Are you sure you want to logout?", preferredStyle: .Alert)
-        let logoutConfirmed = UIAlertAction(title: "Logout", style: .Destructive, handler: { Void in
-            self.dismissViewControllerAnimated(true, completion: nil)
+    func logoutPerformer(_ block:(() -> Void)? = nil) {
+        let logoutActionSheet = UIAlertController(title: "Confirmation Required", message: "Are you sure you want to logout?", preferredStyle: .alert)
+        let logoutConfirmed = UIAlertAction(title: "Logout", style: .destructive, handler: { Void in
+            self.dismiss(animated: true, completion: nil)
             if let block = block {
                 block()
             }
@@ -54,7 +65,7 @@ extension ErrorReportingFromNetworkProtocol where Self : UIViewController  {
             let logoutNetworkOperation = NetworkOperation(typeOfConnection: ConnectionType.deleteSession)
                 logoutNetworkOperation.delegate = self
                 logoutNetworkOperation.completionBlock = {
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                     self.activityIndicatorStop()
                     print("log out successfull")
                     // Deleting user Defaults Values
@@ -67,55 +78,43 @@ extension ErrorReportingFromNetworkProtocol where Self : UIViewController  {
         })
 
         logoutActionSheet.addAction(logoutConfirmed)
-        let cancel = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         logoutActionSheet.addAction(cancel)
-        presentViewController(logoutActionSheet, animated: true, completion: {
+        present(logoutActionSheet, animated: true, completion: {
             self.presentingAlert = false
         })
     }
 }
 
-extension UIViewController {
-
-    func presentErrorPopUp(description: String, inout presentingError: Bool) {
-        presentingError = true
-        let errorActionSheet = UIAlertController(title: "Error: Please Try again", message: description, preferredStyle: .Alert)
-        let tryAgain = UIAlertAction(title: "Okay", style: .Default, handler: { _ in presentingError = false})
-        errorActionSheet.addAction(tryAgain)
-        self.presentViewController(errorActionSheet, animated: true, completion: {
-            presentingError = false
-          })
-    }
-}
 
 //MARK:-Keyboard code
 extension UIViewController:UITextFieldDelegate, UITextViewDelegate {
 
-    func keyboardWillHide(notification: NSNotification) {
+    func keyboardWillHide(_ notification: Notification) {
         view.frame.origin.y = 0.0
     }
     // this needs to be overitten by class that wants keboard support
-    func keyboardWillShow(notification: NSNotification) {
+    func keyboardWillShow(_ notification: Notification) {
     }
 
     func subscribeToKeyboardNotifications() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
 
     func unsubscribeFromKeyboardNotifications() {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
 
     // Hide the keyboard when user hits the return key
-    public func textFieldShouldReturn(textField: UITextField) -> Bool {
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
 
     // This function gets called inside the view so to set the instance as the delegate
-    func setDelegate(field: UITextField) {
+    func setDelegate(_ field: UITextField) {
         field.delegate = self
     }
 
@@ -123,7 +122,7 @@ extension UIViewController:UITextFieldDelegate, UITextViewDelegate {
     func assingDelegateToTextFields() {
 
         // recursive function to find all the sub views in a view
-        func getAllSubViews(input: [UIView]) -> [UIView] {
+        func getAllSubViews(_ input: [UIView]) -> [UIView] {
 
             if input.isEmpty {
                 return []

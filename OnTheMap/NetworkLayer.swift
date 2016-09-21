@@ -19,8 +19,8 @@ enum APIConstants {
 }
 
 protocol ErrorReportingFromNetworkProtocol: class {
-    func reportErrorFromOperation(operationError: ErrorType?)
-    var errorReported: ErrorType? { get set }
+    func reportErrorFromOperation(_ operationError: Error?)
+    var errorReported: Error? { get set }
     var presentingAlert: Bool { get set }
     
     //activityIndicator.startAnimating()
@@ -28,26 +28,29 @@ protocol ErrorReportingFromNetworkProtocol: class {
     func activityIndicatorStop()
 }
 
-class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
+class NetworkOperation: Operation, URLSessionDataDelegate {
     //Error Reporting
     var delegate: ErrorReportingFromNetworkProtocol?
 
     // custom fields
-    private var url: NSURL?
-    private var keyString: String?
-    var request: NSMutableURLRequest?
+    fileprivate var url: URL?
+    fileprivate var keyString: String?
+    //TODO:- This could be the value struct URLRequest
+    var request: URLRequest?
 
     // default
-    private var data = NSMutableData()
-    private var startTime: NSTimeInterval? = nil
-    private var totalTime: NSTimeInterval? = nil
+    fileprivate var data = NSMutableData()
+    fileprivate var startTime: TimeInterval? = nil
+    fileprivate var totalTime: TimeInterval? = nil
+    
 
-    private var tempFinished: Bool = false
-    override var finished: Bool {
+    //TODO:- not sure if I need the @obc workaround here anymore
+    fileprivate var tempFinished: Bool = false
+    override var isFinished: Bool {
         set {
-            willChangeValueForKey("isFinished")
+            willChangeValue(forKey: "isFinished")
             tempFinished = newValue
-            didChangeValueForKey("isFinished")
+            didChangeValue(forKey: "isFinished")
         }
         get {
             return tempFinished
@@ -57,79 +60,79 @@ class NetworkOperation: NSOperation, NSURLSessionDataDelegate {
     override func start() {
 
         // clears up any errors in the delegate
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             self.delegate?.reportErrorFromOperation(nil)
         })
 
-        if cancelled {
-            finished = true
+        if isCancelled {
+            isFinished = true
             return
         }
 
-        let config = NSURLSessionConfiguration.defaultSessionConfiguration()
-        let session = NSURLSession(configuration: config, delegate: self, delegateQueue: nil)
+        let config = URLSessionConfiguration.default
+        let session = Foundation.URLSession(configuration: config, delegate: self, delegateQueue: nil)
 
         // session name for debugging
         session.sessionDescription = keyString
 
         if let request = request {
-            let task = session.dataTaskWithRequest(request)
-            startTime = NSDate.timeIntervalSinceReferenceDate()
+            let task = session.dataTask(with: request)
+            startTime = Date.timeIntervalSinceReferenceDate
             task.resume()
         }
     }
 
-    init(url: NSURL, keyForData: String) {
+    init(url: URL, keyForData: String) {
         super.init()
         self.url = url
         self.keyString = keyForData
-        self.request = NSMutableURLRequest(URL: url)
+        self.request = URLRequest(url: url)
     }
 
-    func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
-        guard let httpResponse = response as? NSHTTPURLResponse else {
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+        guard let httpResponse = response as? HTTPURLResponse else {
             fatalError("Unexpected response type")
         }
 
         switch httpResponse.statusCode {
         case 200:
-            completionHandler(.Allow)
+            completionHandler(.allow)
         case 201:
-            completionHandler(.Allow)
+            completionHandler(.allow)
         default:
             let connectionError = NSError(domain: "Check your login information.", code: httpResponse.statusCode, userInfo: nil)
             print(connectionError.localizedDescription)
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.delegate?.reportErrorFromOperation(connectionError)
             })
-            completionHandler(.Cancel)
-            finished = true
+            completionHandler(.cancel)
+            isFinished = true
         }
         print("return code for server: \(httpResponse.statusCode) for session: \(session.sessionDescription ?? warnLog("no description"))")
     }
 
-    func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveData incomingData: NSData) {
-        data.appendData(incomingData)
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive incomingData: Data) {
+        data.append(incomingData)
     }
 
-    func URLSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let error = error {
             print("Failed! \(error)")
             // sending error to delagate UI on the main queue
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.delegate?.reportErrorFromOperation(error)
             })
 
-            finished = true
+            isFinished = true
             return
         }
 
         //MARk:-ProcessData() and save
         // Right now we are just saving here for later retrival
-        NSUserDefaults.standardUserDefaults().setObject(data, forKey: keyString ?? warnLog(""))
+        UserDefaults.standard.set(data, forKey: keyString ?? warnLog(""))
 
-        totalTime = NSDate.timeIntervalSinceReferenceDate() - startTime! // this should always have a value
-        finished = true
+        totalTime = Date.timeIntervalSinceReferenceDate - startTime! // this should always have a value
+        isFinished = true
     }
 }
 
@@ -149,21 +152,21 @@ extension NetworkOperation {
     convenience init(typeOfConnection: ConnectionType) {
         switch typeOfConnection {
         case .login:
-            self.init(url:NSURL(string: APIConstants.udacitySession)!, keyForData:typeOfConnection.rawValue)
-            request?.HTTPMethod = "POST"
+            self.init(url:URL(string: APIConstants.udacitySession)!, keyForData:typeOfConnection.rawValue)
+            request?.httpMethod = "POST"
             request?.addValue("application/json", forHTTPHeaderField: "Accept")
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request?.HTTPBody = UserDefault.getHTTPBodyUdacityPayload()
+            request?.httpBody = UserDefault.getHTTPBodyUdacityPayload() as Data?
 
         case .getFullName:
             let userID = UserDefault.getUserId() ?? warnLog("")
-            guard let getFullNameURL = NSURL(string: APIConstants.udacityUsers + "\(userID)") else { fatalError("Malformed URL")}
+            guard let getFullNameURL = URL(string: APIConstants.udacityUsers + "\(userID)") else { fatalError("Malformed URL")}
             self.init(url:getFullNameURL, keyForData:typeOfConnection.rawValue)
 
         case .deleteSession:
             let sessionID = UserDefault.getCurrentSessionID() ?? warnLog("")
-            self.init(url:NSURL(string: APIConstants.udacitySession)!, keyForData:typeOfConnection.rawValue)
-            request?.HTTPMethod = "DELETE"
+            self.init(url:URL(string: APIConstants.udacitySession)!, keyForData:typeOfConnection.rawValue)
+            request?.httpMethod = "DELETE"
             request?.setValue(sessionID, forHTTPHeaderField: "X-XSRF-TOKEN")
 
         //MARK: - Parse Connections
@@ -182,25 +185,25 @@ extension NetworkOperation {
         case .postLoggedInStudentLocation:
             self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
             request?.addParseHeaderAndAPIFields()
-            request?.HTTPMethod = "POST"
+            request?.httpMethod = "POST"
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request?.HTTPBody = UserDefault.postParsePayload
+            request?.httpBody = UserDefault.postParsePayload as Data?
 
         case .putUpdateStudentLocation:
             let mostRecentObject = UserDefault.getCurrentLoggedInUserLocations().last?.objectId ?? warnLog("")
-            let url = NSURL(string: APIConstants.parseStudentLocation + "/\(mostRecentObject)" )
+            let url = URL(string: APIConstants.parseStudentLocation + "/\(mostRecentObject)" )
             self.init(url:url!, keyForData: typeOfConnection.rawValue)
             request?.addParseHeaderAndAPIFields()
-            request?.HTTPMethod = "PUT"
+            request?.httpMethod = "PUT"
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request?.HTTPBody = UserDefault.postParsePayload
+            request?.httpBody = UserDefault.postParsePayload as Data?
         }
     }
 }
 
-extension NSMutableURLRequest {
+extension URLRequest {
 
-    func addParseHeaderAndAPIFields() {
+    mutating func addParseHeaderAndAPIFields() {
         self.addValue(APIConstants.parseApplicationID, forHTTPHeaderField: APIConstants.parseHeaderAppID)
         self.addValue(APIConstants.parseRestAPIKey, forHTTPHeaderField: APIConstants.parseHeaderForREST)
     }
@@ -210,27 +213,27 @@ extension NSMutableURLRequest {
 
 extension NetworkOperation {
 
-    static func escapeForURL(input: String) -> String? {
-        return input.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())
+    static func escapeForURL(_ input: String) -> String? {
+        return input.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
     }
 
-    static func parseEscapedURLforObjectID(objectID: String) -> NSURL {
+    static func parseEscapedURLforObjectID(_ objectID: String) -> URL {
         let parseURL = APIConstants.parseStudentLocation
-        guard let parseURLEscaped = NSURL(string: ( NetworkOperation.escapeForURL(parseURL + "/\(objectID)" )) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
+        guard let parseURLEscaped = URL(string: ( NetworkOperation.escapeForURL(parseURL + "/\(objectID)" )) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
         return parseURLEscaped
     }
 
-    static func parseEscapedForUserID(userId: String) -> NSURL {
+    static func parseEscapedForUserID(_ userId: String) -> URL {
         let parseURL = APIConstants.parseStudentLocation
         let userIDwhere =  "?where={\"uniqueKey\":\"\(userId)\"}"
 
-        guard let parseURLEscaped = NSURL(string: ( NetworkOperation.escapeForURL(parseURL + userIDwhere  )) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
+        guard let parseURLEscaped = URL(string: ( NetworkOperation.escapeForURL(parseURL + userIDwhere  )) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
         return parseURLEscaped
 
     }
-    static func parseEscapedURL() -> NSURL {
+    static func parseEscapedURL() -> URL {
         let parseURL = APIConstants.parseStudentLocation
-        guard let parseURLEscaped = NSURL(string: NetworkOperation.escapeForURL(parseURL ) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
+        guard let parseURLEscaped = URL(string: NetworkOperation.escapeForURL(parseURL ) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
         return parseURLEscaped
 
     }
