@@ -82,9 +82,8 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewIdentifier", for: indexPath)
-        //TODO:- NSIndexPath could probably be just IndexPath
         cell.imageView?.image = UIImage(named: "pin")
-        let student = UserDefault.getUserLocations()[(indexPath as NSIndexPath).row]
+        let student = UserDefault.getUserLocations()[indexPath.row]
         cell.textLabel?.text = "\(student.fullname):- \(student.mapString)"
         return cell
     }
@@ -92,8 +91,7 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         let application = UIApplication.shared
-        //TODO:- NSIndexPath could probably be just IndexPath
-        let urlString = UserDefault.getUserLocations()[(indexPath as NSIndexPath).row].mediaURL
+        let urlString = UserDefault.getUserLocations()[indexPath.row].mediaURL
         let urlStrinCleaned = urlString.trimmingCharacters(in: CharacterSet.whitespaces)
         if let url = URL(string: urlStrinCleaned) {
             application.openURL(url)

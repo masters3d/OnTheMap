@@ -35,7 +35,6 @@ class NetworkOperation: Operation, URLSessionDataDelegate {
     // custom fields
     fileprivate var url: URL?
     fileprivate var keyString: String?
-    //TODO:- This could be the value struct URLRequest
     var request: URLRequest?
 
     // default
@@ -44,7 +43,7 @@ class NetworkOperation: Operation, URLSessionDataDelegate {
     fileprivate var totalTime: TimeInterval? = nil
     
 
-    //TODO:- not sure if I need the @obc workaround here anymore
+    // Still need this workaround to overide getter only isFinish
     fileprivate var tempFinished: Bool = false
     override var isFinished: Bool {
         set {
@@ -90,6 +89,7 @@ class NetworkOperation: Operation, URLSessionDataDelegate {
     }
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+
         guard let httpResponse = response as? HTTPURLResponse else {
             fatalError("Unexpected response type")
         }
@@ -156,7 +156,7 @@ extension NetworkOperation {
             request?.httpMethod = "POST"
             request?.addValue("application/json", forHTTPHeaderField: "Accept")
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request?.httpBody = UserDefault.getHTTPBodyUdacityPayload() as Data?
+            request?.httpBody = UserDefault.getHTTPBodyUdacityPayload()
 
         case .getFullName:
             let userID = UserDefault.getUserId() ?? warnLog("")
@@ -187,7 +187,7 @@ extension NetworkOperation {
             request?.addParseHeaderAndAPIFields()
             request?.httpMethod = "POST"
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request?.httpBody = UserDefault.postParsePayload as Data?
+            request?.httpBody = UserDefault.postParsePayload
 
         case .putUpdateStudentLocation:
             let mostRecentObject = UserDefault.getCurrentLoggedInUserLocations().last?.objectId ?? warnLog("")
@@ -196,7 +196,7 @@ extension NetworkOperation {
             request?.addParseHeaderAndAPIFields()
             request?.httpMethod = "PUT"
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request?.httpBody = UserDefault.postParsePayload as Data?
+            request?.httpBody = UserDefault.postParsePayload
         }
     }
 }

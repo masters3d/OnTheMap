@@ -41,7 +41,7 @@ extension ErrorReportingFromNetworkProtocol where Self : UIViewController  {
         if let operationError = operationError ,
             self.errorReported == nil && presentingAlert == false {
             self.errorReported = operationError
-            let descriptionError = (operationError as NSError).localizedDescription
+            let descriptionError = operationError.localizedDescription
             self.presentErrorPopUp(descriptionError)
             self.activityIndicatorStop()
 
