@@ -9,13 +9,9 @@
 import UIKit
 
 enum APIConstants {
-    static let udacitySession  = "https://www.udacity.com/api/session"
-    static let udacityUsers = "https://www.udacity.com/api/users/"
-    static let parseStudentLocation = "https://parse.udacity.com/parse/classes/StudentLocation"
-    static let parseApplicationID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
-    static let parseHeaderAppID = "X-Parse-Application-Id"
-    static let parseRestAPIKey = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
-    static let parseHeaderForREST = "X-Parse-REST-API-Key"
+    static let udacitySession  = "https://onthemap-api.udacity.com/v1/session"
+    static let udacityUsers = "https://onthemap-api.udacity.com/v1/users/"
+    static let parseStudentLocation = "https://onthemap-api.udacity.com/v1/StudentLocation"
 }
 
 protocol ErrorReportingFromNetworkProtocol: class {
@@ -88,7 +84,11 @@ class NetworkOperation: Operation, URLSessionDataDelegate {
         self.request = URLRequest(url: url)
     }
 
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse,
+            completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+        ) {
+
+        print(" URL \(String(describing: url) )")
 
         guard let httpResponse = response as? HTTPURLResponse else {
             fatalError("Unexpected response type")
@@ -129,7 +129,7 @@ class NetworkOperation: Operation, URLSessionDataDelegate {
 
         //MARk:-ProcessData() and save
         // Right now we are just saving here for later retrival
-        UserDefaults.standard.set(data, forKey: keyString ?? warnLog(""))
+        UserDefault.setAny(data, forKey: keyString ?? warnLog(""))
 
         totalTime = Date.timeIntervalSinceReferenceDate - startTime! // this should always have a value
         isFinished = true
@@ -171,20 +171,23 @@ extension NetworkOperation {
 
         //MARK: - Parse Connections
         case .getStudentLocationsWithLimit:
-            self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
-            request?.addParseHeaderAndAPIFields()
-            request?.addValue("100", forHTTPHeaderField: "limit")
-            request?.addValue("-updatedAt", forHTTPHeaderField: "order")
+
+            //TODO: Move to URLComponents to build the URL
+            self.init(url:URL(string: APIConstants.parseStudentLocation + "?order=-updatedAt")!, keyForData: typeOfConnection.rawValue)
+            request?.addHeaderFields()
+            //request?.addValue("50", forHTTPHeaderField: "limit")
+            //request?.addValue("0", forHTTPHeaderField: "skip")
+            //request?.addValue("-updatedAt", forHTTPHeaderField: "order")
 
         case .getLoggedInStudentMultipleLocations:
             let userId = UserDefault.getUserId() ?? warnLog("")
             self.init(url:NetworkOperation.parseEscapedForUserID(userId), keyForData: typeOfConnection.rawValue)
-            request?.addParseHeaderAndAPIFields()
+            request?.addHeaderFields()
             //Alternative to building URL: request?.addValue("{\"uniqueKey\":\"\(userId)\"}", forHTTPHeaderField: "where")
 
         case .postLoggedInStudentLocation:
-            self.init(url:NetworkOperation.parseEscapedURL(), keyForData: typeOfConnection.rawValue)
-            request?.addParseHeaderAndAPIFields()
+            self.init(url:NetworkOperation.parseEscapedURLForStudentLocation(), keyForData: typeOfConnection.rawValue)
+            request?.addHeaderFields()
             request?.httpMethod = "POST"
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request?.httpBody = UserDefault.postParsePayload
@@ -193,7 +196,7 @@ extension NetworkOperation {
             let mostRecentObject = UserDefault.getCurrentLoggedInUserLocations().last?.objectId ?? warnLog("")
             let url = URL(string: APIConstants.parseStudentLocation + "/\(mostRecentObject)" )
             self.init(url:url!, keyForData: typeOfConnection.rawValue)
-            request?.addParseHeaderAndAPIFields()
+            request?.addHeaderFields()
             request?.httpMethod = "PUT"
             request?.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request?.httpBody = UserDefault.postParsePayload
@@ -202,14 +205,10 @@ extension NetworkOperation {
 }
 
 extension URLRequest {
-
-    mutating func addParseHeaderAndAPIFields() {
-        self.addValue(APIConstants.parseApplicationID, forHTTPHeaderField: APIConstants.parseHeaderAppID)
-        self.addValue(APIConstants.parseRestAPIKey, forHTTPHeaderField: APIConstants.parseHeaderForREST)
+    mutating func addHeaderFields() {
+        //self.addValue(APIConstants.parseApplicationID, forHTTPHeaderField: APIConstants.parseHeaderAppID)
     }
 }
-
-
 
 extension NetworkOperation {
 
@@ -231,7 +230,7 @@ extension NetworkOperation {
         return parseURLEscaped
 
     }
-    static func parseEscapedURL() -> URL {
+    static func parseEscapedURLForStudentLocation() -> URL {
         let parseURL = APIConstants.parseStudentLocation
         guard let parseURLEscaped = URL(string: NetworkOperation.escapeForURL(parseURL ) ?? warnLog(parseURL)) else { fatalError("Malformed URL") }
         return parseURLEscaped
