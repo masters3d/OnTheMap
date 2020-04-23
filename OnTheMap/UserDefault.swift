@@ -190,7 +190,7 @@ enum UserDefault {
         if let dict = UserDefault.getParseUserLocations(),
             let arrayDict = dict["results"] as? NSArray,
             let result = arrayDict as? [NSDictionary] {
-            usersLocations = result.flatMap(UserLocation.init)
+            usersLocations = result.compactMap(UserLocation.init)
         }
 
         return usersLocations

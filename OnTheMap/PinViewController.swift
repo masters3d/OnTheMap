@@ -24,12 +24,12 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
     override func viewDidLoad() {
         super.viewDidLoad()
         self.refreshControl = UIRefreshControl()
-        self.refreshControl?.addTarget(self, action: #selector(self.handleRefresh), for: UIControlEvents.valueChanged)
+        self.refreshControl?.addTarget(self, action: #selector(self.handleRefresh), for: UIControl.Event.valueChanged)
         // refreshes user locations
         getUsersLocationsFromServer()
     }
 
-    func handleRefresh() {
+    @objc func handleRefresh() {
         getUsersLocationsFromServer()
         self.tableView.reloadData()
     }
@@ -116,7 +116,5 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
                 application.openURL(url)
             }
         }
-
     }
-
 }
