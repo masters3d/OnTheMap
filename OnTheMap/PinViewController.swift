@@ -24,12 +24,12 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
     override func viewDidLoad() {
         super.viewDidLoad()
         self.refreshControl = UIRefreshControl()
-        self.refreshControl?.addTarget(self, action: #selector(self.handleRefresh), for: UIControlEvents.valueChanged)
+        self.refreshControl?.addTarget(self, action: #selector(self.handleRefresh), for: UIControl.Event.valueChanged)
         // refreshes user locations
         getUsersLocationsFromServer()
     }
 
-    func handleRefresh() {
+    @objc func handleRefresh() {
         getUsersLocationsFromServer()
         self.tableView.reloadData()
     }
@@ -80,11 +80,26 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
         return UserDefault.getUserLocations().count
     }
 
+
+    // DateFormatter
+    private let dateFormatterServer: DateFormatter = {
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                        return dateFormatter
+                        }()
+
+    private let dateFormatterShort: DateFormatter = {
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateStyle = .short
+                        return dateFormatter
+                        }()
+
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewIdentifier", for: indexPath)
         cell.imageView?.image = UIImage(named: "pin")
         let student = UserDefault.getUserLocations()[indexPath.row]
-        cell.textLabel?.text = "\(student.fullname):- \(student.mapString)"
+        cell.textLabel?.text = "\( dateFormatterShort.string(from: dateFormatterServer.date(from: student.createdAt) ?? Date.distantFuture)    ) | \(student.fullname):- \(student.mapString)"
         return cell
     }
 
@@ -101,7 +116,5 @@ class PinViewController: UITableViewController, ErrorReportingFromNetworkProtoco
                 application.openURL(url)
             }
         }
-
     }
-
 }

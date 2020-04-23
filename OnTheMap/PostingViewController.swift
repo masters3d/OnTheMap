@@ -169,7 +169,7 @@ class PostingViewController: UIViewController, ErrorReportingFromNetworkProtocol
                 self.locationTosSubmit = location
                 let regionCenter = CLLocationCoordinate2D(latitude: location.coordinate.latitude,
                                                           longitude: location.coordinate.longitude)
-                let mapRegion = MKCoordinateRegion(center: regionCenter, span: MKCoordinateSpanMake(0.25, 0.25))
+                let mapRegion = MKCoordinateRegion(center: regionCenter, span: MKCoordinateSpan.init(latitudeDelta: 0.25, longitudeDelta: 0.25))
 
                 self.mapView.setRegion(mapRegion, animated: true)
 

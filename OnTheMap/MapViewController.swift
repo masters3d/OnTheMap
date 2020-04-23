@@ -42,7 +42,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, ErrorReportingFrom
 
     func addLocationsToMap(_ input: [UserLocation]) {
         self.mapView.addAnnotations(
-            input.flatMap { $0.annotation }
+            input.compactMap { $0.annotation }
         )
 
     }
